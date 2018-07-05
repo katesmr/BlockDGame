@@ -86,16 +86,24 @@ Cell.TYPE_EXTRA_BONUS = 2;
  */
 Cell.TYPE_EXTRA_BAD = 3;
 
+/**
+ * @returns {Number}
+ */
 Cell.prototype.getValue = function(){
 	return this._value;
 };
 
+/**
+ * @param value {Number}
+ */
 Cell.prototype.setValue = function(value){
 	this._value = value;
 };
 
-Cell.prototype.setPrice = function(price){
-
+Cell.prototype.setPrice = function(){
+	if(this._price > Cell.PRICE_X5){
+		this._price += 1;
+	}
 };
 
 /**
@@ -110,13 +118,14 @@ Cell.prototype.transform = function(typeEnum){
 			break;
 		case Cell.TYPE_EXTRA_BONUS:
 			this._type = Cell.TYPE_EXTRA_BONUS;
+			this.setPrice();
 			break;
 		case Cell.TYPE_EXTRA_BAD:
 			this._type = Cell.TYPE_EXTRA_BAD;
+			break;
 		default:
 			break;
 	}
-	// change _type
 };
 
 /**
@@ -163,8 +172,12 @@ Cell.prototype.equals = function(cell){
  * @return {Boolean}
  */
 Cell.prototype.swap = function(cell){
+	var tmpCell = Object.assign(new Cell(), cell);
     cell.setValue(this.getValue());
     cell._price = this._price;
     cell._type = this._type;
+    this.setValue(tmpCell.getValue());
+    this._price = tmpCell._price;
+    this._type = tmpCell._type;
 	return true;
 };
