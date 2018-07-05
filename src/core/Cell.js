@@ -11,7 +11,7 @@ function Cell(){
 	 * @property _value
 	 * @type {Number}
 	 */
-	this._value = -1;
+	this._value = Cell.FREE_CELL_VALUE;
 
 	/**
 	 * @protected
@@ -28,7 +28,24 @@ function Cell(){
 	this._type = Cell.TYPE_NORMAL;
 }
 
+/**
+ * FREE_CELL_VALUE
+ * @static
+ * @type {Number}
+ */
 Cell.FREE_CELL_VALUE = -1;
+
+/**
+ * PRICE_INCREASOR
+ * @type {number}
+ */
+Cell.PRICE_INCREASOR = 1;
+
+/**
+ * PRICE_DECREASOR
+ * @type {number}
+ */
+Cell.PRICE_DECREASOR = 1;
 
 /**
  * @property PRICE_X1
@@ -100,9 +117,21 @@ Cell.prototype.setValue = function(value){
 	this._value = value;
 };
 
-Cell.prototype.setPrice = function(){
-	if(this._price > Cell.PRICE_X5){
-		this._price += 1;
+/**
+ * increase price value
+ */
+Cell.prototype.increasePrice = function(){
+	if(this._price < Cell.PRICE_X5){
+		this._price += Cell.PRICE_INCREASOR;
+	}
+};
+
+/**
+ * decrease price value
+ */
+Cell.prototype.decreasePrice = function(){
+	if(this._price > 0){
+		this._price -= Cell.PRICE_DECREASOR;
 	}
 };
 
@@ -118,10 +147,11 @@ Cell.prototype.transform = function(typeEnum){
 			break;
 		case Cell.TYPE_EXTRA_BONUS:
 			this._type = Cell.TYPE_EXTRA_BONUS;
-			this.setPrice();
+			this.increasePrice();
 			break;
 		case Cell.TYPE_EXTRA_BAD:
 			this._type = Cell.TYPE_EXTRA_BAD;
+			this.decreasePrice();
 			break;
 		default:
 			break;
@@ -172,12 +202,14 @@ Cell.prototype.equals = function(cell){
  * @return {Boolean}
  */
 Cell.prototype.swap = function(cell){
-	var tmpCell = Object.assign(new Cell(), cell);
-    cell.setValue(this.getValue());
-    cell._price = this._price;
-    cell._type = this._type;
-    this.setValue(tmpCell.getValue());
-    this._price = tmpCell._price;
-    this._type = tmpCell._type;
+	if(this !== cell){
+        var tmpCell = Object.assign(new Cell(), cell);
+        cell.setValue(this.getValue());
+        cell._price = this._price;
+        cell._type = this._type;
+        this.setValue(tmpCell.getValue());
+        this._price = tmpCell._price;
+        this._type = tmpCell._type;
+    }
 	return true;
 };

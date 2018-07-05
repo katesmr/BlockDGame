@@ -60,10 +60,63 @@ describe("Cell", function(){
         });
     });
 
+    describe("isFree()", function(){
+        it("checks free value cell", function(){
+            var cell = new Cell();
+            expect(cell.isFree()).to.equal(true);
+        });
+    });
+
+    describe("isFree()", function(){
+        it("checks free value cell", function(){
+            var cell = new Cell();
+            cell.setValue(6);
+            expect(cell.isFree()).to.equal(false);
+        });
+    });
+
+    describe("transform()", function(){
+        it("checks transform to normal", function(){
+            var cell = new Cell();
+            cell.transform(Cell.TYPE_NORMAL);
+            expect(cell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+            expect(cell._price).to.equal(Cell.PRICE_X1);
+        });
+    });
+
+    describe("transform()", function(){
+        it("checks transform to bonus", function(){
+            var cell = new Cell();
+            cell.transform(Cell.TYPE_EXTRA_BONUS);
+            expect(cell.isType(Cell.TYPE_EXTRA_BONUS)).to.equal(true);
+            expect(cell._price).to.equal(Cell.PRICE_X2);
+        });
+    });
+
+    describe("transform()", function(){
+        it("checks transform to bad", function(){
+            var cell = new Cell();
+            cell.transform(Cell.TYPE_EXTRA_BAD);
+            expect(cell.isType(Cell.TYPE_EXTRA_BAD)).to.equal(true);
+            expect(cell._price).to.equal(0);
+        });
+    });
+
+    describe("reset()", function(){
+        it("checks reset default cell", function(){
+            var cell = new Cell();
+            cell.reset();
+            expect(cell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+            expect(cell.getValue()).to.equal(Cell.FREE_CELL_VALUE);
+        });
+    });
+
     describe("reset()", function(){
         it("checks reset", function(){
             var cell = new Cell();
+            cell.transform(Cell.TYPE_EXTRA_BONUS);
             cell.reset();
+            expect(cell.isType(Cell.TYPE_EXTRA_BONUS)).to.equal(false);
             expect(cell.isType(Cell.TYPE_NORMAL)).to.equal(true);
             expect(cell.getValue()).to.equal(Cell.FREE_CELL_VALUE);
         });
@@ -81,8 +134,10 @@ describe("Cell", function(){
         it("checks equals not equal cells", function(){
             var currentCell = new Cell();
             var otherCell = new Cell();
-            otherCell.setValue(3);
+            otherCell.setValue(6);
             expect(currentCell.equals(otherCell)).to.equal(false);
+            expect(currentCell._type === otherCell._type).to.equal(true);
+            expect(currentCell.getValue() === otherCell.getValue()).to.equal(false);
         });
     });
 
@@ -96,6 +151,25 @@ describe("Cell", function(){
             expect(currentCell.isType(Cell.TYPE_EXTRA_BONUS)).to.equal(false);
             expect(otherCell.isType(Cell.TYPE_NORMAL)).to.equal(false);
             expect(otherCell.isType(Cell.TYPE_EXTRA_BONUS)).to.equal(true);
+        });
+    });
+
+    describe("swap()", function(){
+        it("checks swap equals cells", function(){
+            var currentCell = new Cell();
+            var otherCell = new Cell();
+            currentCell.swap(otherCell);
+            expect(currentCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+            expect(otherCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+            expect(currentCell.getValue() === otherCell.getValue()).to.equal(true);
+        });
+    });
+
+    describe("swap()", function(){
+        it("checks swap self", function(){
+            var currentCell = new Cell();
+            currentCell.swap(currentCell);
+            expect(currentCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
         });
     });
 });
