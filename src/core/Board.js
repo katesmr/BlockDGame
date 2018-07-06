@@ -31,7 +31,7 @@ function Board(width, height){
  */
 Board.prototype.at = function(index){
 	return null;
-}
+};
 
 /**
  * @param {Number} x
@@ -41,7 +41,7 @@ Board.prototype.at = function(index){
 Board.prototype.indexAtPosition = function(x, y){
 	// Tip: look for the formula how to get index at 2D space from x:y
 	return -1;
-}
+};
 
 /**
  * @param {Number} index
@@ -49,7 +49,7 @@ Board.prototype.indexAtPosition = function(x, y){
  */
 Board.prototype.xAtIndex = function(index){
 	return 0;
-}
+};
 
 /**
  * @param {Number} index
@@ -57,7 +57,7 @@ Board.prototype.xAtIndex = function(index){
  */
 Board.prototype.yAtIndex = function(index){
 	return 0;
-}
+};
 
 /**
  * @param {Number} index - index of the initial cell to match with it's neighbours
@@ -66,7 +66,7 @@ Board.prototype.yAtIndex = function(index){
  */
 Board.prototype.getMatchIndexes = function(index, minAmount){
 	return [];
-}
+};
 
 /**
  * Tells whether the board  has appropriate amount of nearly standing equal cells
@@ -75,7 +75,7 @@ Board.prototype.getMatchIndexes = function(index, minAmount){
  */
 Board.prototype.findMatchIndexes = function(minAmount){
 	return [];
-}
+};
 
 /**
  * Computes a reward of the cells under given indexes
@@ -84,5 +84,4 @@ Board.prototype.findMatchIndexes = function(minAmount){
  */
 Board.prototype.getReward = function(indexes){
 	return 1;
-}
-
+};

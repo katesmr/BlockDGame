@@ -111,6 +111,17 @@ Cell.prototype.getValue = function(){
 };
 
 /**
+ * @returns {Number}
+ */
+Cell.prototype.getType = function(){
+	return this._type;
+};
+
+Cell.prototype.getPrice = function(){
+	return this._price;
+};
+
+/**
  * @param value {Number}
  */
 Cell.prototype.setValue = function(value){
