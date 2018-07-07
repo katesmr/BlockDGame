@@ -26,11 +26,18 @@ function Board(width, height){
 }
 
 /**
+ * Full _data
+ */
+Board.prototype.createData = function(){
+
+};
+
+/**
  * @param {Number} index
  * @return {Cell|null}
  */
 Board.prototype.at = function(index){
-	return null;
+	return this._data[index] !== undefined ? this._data[index] : null;
 };
 
 /**
@@ -40,7 +47,7 @@ Board.prototype.at = function(index){
  */
 Board.prototype.indexAtPosition = function(x, y){
 	// Tip: look for the formula how to get index at 2D space from x:y
-	return -1;
+	return x + width * y;
 };
 
 /**
@@ -48,7 +55,7 @@ Board.prototype.indexAtPosition = function(x, y){
  * @return {Number} x-coord from the index
  */
 Board.prototype.xAtIndex = function(index){
-	return 0;
+	return index % width;
 };
 
 /**
@@ -56,7 +63,7 @@ Board.prototype.xAtIndex = function(index){
  * @return {Number} y-coord from the index
  */
 Board.prototype.yAtIndex = function(index){
-	return 0;
+	return index / width;
 };
 
 /**

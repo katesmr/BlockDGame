@@ -138,15 +138,6 @@ Cell.prototype.increasePrice = function(){
 };
 
 /**
- * decrease price value
- */
-Cell.prototype.decreasePrice = function(){
-	if(this._price > 0){
-		this._price -= Cell.PRICE_DECREASOR;
-	}
-};
-
-/**
  * Transforms the type to the new one.
  * @param {Number} typeEnum
  */
@@ -162,7 +153,7 @@ Cell.prototype.transform = function(typeEnum){
 			break;
 		case Cell.TYPE_EXTRA_BAD:
 			this._type = Cell.TYPE_EXTRA_BAD;
-			this.decreasePrice();
+			this.increasePrice();
 			break;
 		default:
 			break;
