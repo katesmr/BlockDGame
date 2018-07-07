@@ -98,7 +98,7 @@ describe("Cell", function(){
             var cell = new Cell();
             cell.transform(Cell.TYPE_EXTRA_BAD);
             expect(cell.isType(Cell.TYPE_EXTRA_BAD)).to.equal(true);
-            expect(cell.getPrice()).to.equal(0);
+            expect(cell.getPrice()).to.equal(Cell.PRICE_X2);
         });
     });
 
@@ -126,6 +126,9 @@ describe("Cell", function(){
         it("checks equals equal cells", function(){
             var currentCell = new Cell();
             var otherCell = new Cell();
+            expect(currentCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+            expect(otherCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+            expect(currentCell.getValue() === otherCell.getValue()).to.equal(true);
             expect(currentCell.equals(otherCell)).to.equal(true);
         });
     });
@@ -136,7 +139,8 @@ describe("Cell", function(){
             var otherCell = new Cell();
             otherCell.setValue(6);
             expect(currentCell.equals(otherCell)).to.equal(false);
-            expect(currentCell.getType() === otherCell.getType()).to.equal(true);
+            expect(currentCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+            expect(otherCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
             expect(currentCell.getValue() === otherCell.getValue()).to.equal(false);
         });
     });
@@ -147,7 +151,8 @@ describe("Cell", function(){
             var otherCell = new Cell();
             currentCell.transform(Cell.TYPE_EXTRA_BONUS);
             expect(currentCell.equals(otherCell)).to.equal(true);
-            expect(currentCell.getType() === otherCell.getType()).to.equal(false);
+            expect(currentCell.isType(Cell.TYPE_EXTRA_BONUS)).to.equal(true);
+            expect(otherCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
             expect(currentCell.getPrice() === otherCell.getPrice()).to.equal(false);
         });
     });
@@ -158,7 +163,6 @@ describe("Cell", function(){
             var otherCell = new Cell();
             otherCell.transform(Cell.TYPE_EXTRA_BAD);
             expect(currentCell.equals(otherCell)).to.equal(true);
-            expect(currentCell.getType() === otherCell.getType()).to.equal(false);
             expect(currentCell.getPrice() === otherCell.getPrice()).to.equal(false);
         });
     });
