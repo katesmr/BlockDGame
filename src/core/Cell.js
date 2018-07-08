@@ -104,6 +104,37 @@ Cell.TYPE_EXTRA_BONUS = 2;
 Cell.TYPE_EXTRA_BAD = 3;
 
 /**
+ * Compute total price of all cells by formula normalPrice * bonusPrice / badPrice
+ * @param cellList {Array} Cell list
+ * @returns {Number}
+ */
+Cell.computeScore = function(cellList){
+	var i, cell, result;
+	var normalCellPrice = 0;
+    var bonusCellPrice = 0;
+    var badCellPrice = 0;
+    var count = cellList.length;
+    for(i = 0; i < count; ++i){
+		cell = cellList[i];
+		if(cell.isType(Cell.TYPE_NORMAL) === true){
+			normalCellPrice += cell.getPrice();
+		} else if(cell.isType(Cell.TYPE_EXTRA_BONUS) === true){
+			bonusCellPrice += cell.getPrice();
+		} else if(cell.isType(Cell.TYPE_EXTRA_BAD) === true){
+            badCellPrice += cell.getPrice();
+        }
+	}
+	if(bonusCellPrice === 0){
+		bonusCellPrice = 1;
+	}
+	if(badCellPrice === 0){
+		badCellPrice = 1;
+	}
+	result = normalCellPrice * bonusCellPrice / badCellPrice;
+	return Math.floor(result);
+};
+
+/**
  * @returns {Number}
  */
 Cell.prototype.getValue = function(){
@@ -113,10 +144,6 @@ Cell.prototype.getValue = function(){
 /**
  * @returns {Number}
  */
-Cell.prototype.getType = function(){
-	return this._type;
-};
-
 Cell.prototype.getPrice = function(){
 	return this._price;
 };
@@ -129,7 +156,7 @@ Cell.prototype.setValue = function(value){
 };
 
 /**
- * increase price value
+ * Increase price value
  */
 Cell.prototype.increasePrice = function(){
 	if(this._price < Cell.PRICE_X5){
