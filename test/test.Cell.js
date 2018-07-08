@@ -10,6 +10,74 @@ describe("Cell", function(){
         });
     });
 
+    describe("computeScore()", function(){
+        it("checks total score of empty", function(){
+            var cellList = [];
+            expect(Cell.computeScore(cellList)).to.equal(0);
+        });
+    });
+
+    describe("computeScore()", function(){
+        it("checks total score of cell list with all cell types", function(){
+            var i;
+            var count = 10;
+            var cellList = [];
+            for(i = 0; i < count; ++i){
+                cellList.push(new Cell()); // by default price = 1
+            }
+            cellList[3].transform(Cell.TYPE_EXTRA_BONUS); // set price to 2
+            cellList[4].transform(Cell.TYPE_EXTRA_BAD); // set price to 2
+            cellList[9].transform(Cell.TYPE_EXTRA_BONUS); // set price to 2
+            // normal price - 7, bonus price - 4, bad price - 2
+            // 7 * 4 / 2 = 14
+            expect(Cell.computeScore(cellList)).to.equal(14);
+        });
+    });
+
+    describe("computeScore()", function(){
+        it("checks total score of cell list with normal and bonus cell types", function(){
+            var i;
+            var count = 10;
+            var cellList = [];
+            for(i = 0; i < count; ++i){
+                cellList.push(new Cell()); // by default price = 1
+            }
+            cellList[3].transform(Cell.TYPE_EXTRA_BONUS); // set price to 2
+            cellList[9].transform(Cell.TYPE_EXTRA_BONUS); // set price to 2
+            // normal price - 8, bonus price - 4, dab price - 0
+            // 8 * 4
+            expect(Cell.computeScore(cellList)).to.equal(32);
+        });
+    });
+
+    describe("computeScore()", function(){
+        it("checks total score of cell list with normal and bad cell types", function(){
+            var i;
+            var count = 10;
+            var cellList = [];
+            for(i = 0; i < count; ++i){
+                cellList.push(new Cell()); // by default price = 1
+            }
+            cellList[3].transform(Cell.TYPE_EXTRA_BAD); // set price to 2
+            // normal price - 9, bonus price - 0, dab price - 2
+            // 9 / 2 = 4.5 ~ 4
+            expect(Cell.computeScore(cellList)).to.equal(4);
+        });
+    });
+
+    describe("computeScore()", function(){
+        it("checks total score of cell list with normal cell types", function(){
+            var i;
+            var count = 10;
+            var cellList = [];
+            for(i = 0; i < count; ++i){
+                cellList.push(new Cell()); // by default price = 1
+            }
+            // normal price - 10, bonus price - 0, dab price - 0
+            expect(Cell.computeScore(cellList)).to.equal(10);
+        });
+    });
+
     describe("isType()", function(){
         it("checks default type", function(){
             var cell = new Cell();
@@ -126,9 +194,6 @@ describe("Cell", function(){
         it("checks equals equal cells", function(){
             var currentCell = new Cell();
             var otherCell = new Cell();
-            expect(currentCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
-            expect(otherCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
-            expect(currentCell.getValue() === otherCell.getValue()).to.equal(true);
             expect(currentCell.equals(otherCell)).to.equal(true);
         });
     });
@@ -139,8 +204,7 @@ describe("Cell", function(){
             var otherCell = new Cell();
             otherCell.setValue(6);
             expect(currentCell.equals(otherCell)).to.equal(false);
-            expect(currentCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
-            expect(otherCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+            expect(currentCell.isType(Cell.TYPE_NORMAL) === otherCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
             expect(currentCell.getValue() === otherCell.getValue()).to.equal(false);
         });
     });
@@ -151,8 +215,8 @@ describe("Cell", function(){
             var otherCell = new Cell();
             currentCell.transform(Cell.TYPE_EXTRA_BONUS);
             expect(currentCell.equals(otherCell)).to.equal(true);
+            expect(currentCell.isType(Cell.TYPE_NORMAL) === otherCell.isType(Cell.TYPE_NORMAL)).to.equal(false);
             expect(currentCell.isType(Cell.TYPE_EXTRA_BONUS)).to.equal(true);
-            expect(otherCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
             expect(currentCell.getPrice() === otherCell.getPrice()).to.equal(false);
         });
     });
@@ -163,6 +227,8 @@ describe("Cell", function(){
             var otherCell = new Cell();
             otherCell.transform(Cell.TYPE_EXTRA_BAD);
             expect(currentCell.equals(otherCell)).to.equal(true);
+            expect(currentCell.isType(Cell.TYPE_NORMAL) === otherCell.isType(Cell.TYPE_NORMAL)).to.equal(false);
+            expect(otherCell.isType(Cell.TYPE_EXTRA_BAD)).to.equal(true);
             expect(currentCell.getPrice() === otherCell.getPrice()).to.equal(false);
         });
     });
