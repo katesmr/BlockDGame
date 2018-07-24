@@ -1,3 +1,5 @@
+var Cell = require("./Cell.js");
+
 module.exports = Board;
 
 /**
@@ -23,13 +25,20 @@ function Board(width, height){
 	 * @type {Number}
 	 */
 	this.height = height;
+
+	this._createData();
 }
 
 /**
  * Full _data
  */
-Board.prototype.createData = function(){
-
+Board.prototype._createData = function(){
+	var i, j;
+	for(i = 0; i < this.height; ++i){
+		for(j = 0; j < this.width; ++j){
+			this._data.push(new Cell());
+		}
+	}
 };
 
 /**
@@ -37,7 +46,11 @@ Board.prototype.createData = function(){
  * @return {Cell|null}
  */
 Board.prototype.at = function(index){
-	return this._data[index] !== undefined ? this._data[index] : null;
+	var result = null;
+	if(index >= 0 && index < this._data.length){
+		result = this._data[index];
+	}
+	return result;
 };
 
 /**
