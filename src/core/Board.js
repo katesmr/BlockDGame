@@ -33,12 +33,11 @@ function Board(width, height){
  * Full _data
  */
 Board.prototype._createData = function(){
-	var i, j;
-	for(i = 0; i < this.height; ++i){
-		for(j = 0; j < this.width; ++j){
-			this._data.push(new Cell());
-		}
-	}
+    var i, count;
+    count = this.height * this.width;
+    for(i = 0; i < count; ++i){
+        this._data.push(new Cell());
+    }
 };
 
 /**
@@ -76,7 +75,7 @@ Board.prototype.xAtIndex = function(index){
  * @return {Number} y-coord from the index
  */
 Board.prototype.yAtIndex = function(index){
-	return index / width;
+	return Math.floor(index / this.width);
 };
 
 /**
