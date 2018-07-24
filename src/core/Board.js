@@ -58,8 +58,7 @@ Board.prototype.at = function(index){
  * @return {Number} computed index
  */
 Board.prototype.indexAtPosition = function(x, y){
-	// Tip: look for the formula how to get index at 2D space from x:y
-	return x + width * y;
+	return x + this.width * y;
 };
 
 /**
@@ -67,7 +66,7 @@ Board.prototype.indexAtPosition = function(x, y){
  * @return {Number} x-coord from the index
  */
 Board.prototype.xAtIndex = function(index){
-	return index % width;
+	return index % this.width;
 };
 
 /**
@@ -94,13 +93,4 @@ Board.prototype.getMatchIndexes = function(index, minAmount){
  */
 Board.prototype.findMatchIndexes = function(minAmount){
 	return [];
-};
-
-/**
- * Computes a reward of the cells under given indexes
- * @param {Array} indexes - list of matched indexes
- * @return {Number}
- */
-Board.prototype.getReward = function(indexes){
-	return 1;
 };
