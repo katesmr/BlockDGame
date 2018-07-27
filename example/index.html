@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
 </head>
 <body>
-$END$
+<canvas id="maze" width=400 height=500></canvas>
+<script src="../dist/dist.js"></script>
+<script>
+    var board = new game.Board(2, 3);
+    board.at(2).setValue(1);
+    board.at(4).setValue(1);
+
+    console.log(board.getMatchIndexes(2, 2));
+</script>
 </body>
 </html>
