@@ -26,6 +26,9 @@ function Board(width, height){
 	 */
 	this.height = height;
 
+	this._matchIndexes = [];
+	this.isColumnMatch = true;
+
 	this._createData();
 }
 
@@ -83,8 +86,76 @@ Board.prototype.yAtIndex = function(index){
  * @return {Array} - list of matched indexes
  */
 Board.prototype.getMatchIndexes = function(index, minAmount){
-	return [];
+	var x, y, nextCell, nextIndex;
+	var currentCell = this.at(index);
+	if(currentCell){
+        this._matchIndexes.push(index); // save current match index
+        if(this._matchIndexes.length === minAmount){
+        	return this._matchIndexes; // exit when cont of matching indexes equal minAmount
+		} else{
+            x = this.xAtIndex(index);
+            y = this.yAtIndex(index);
+            if(this.isColumnMatch){
+            	// search by column
+                if(y - 1 >= 0){
+                    // top
+                    nextIndex = this.indexAtPosition(x, y - 1);
+                    if(this._matchIndexes.indexOf(nextIndex) === -1){
+                    	// get cell if _matchIndexes don`t have it
+                        nextCell = this.at(nextIndex);
+                        if(currentCell.equals(nextCell)){
+                            this.getMatchIndexes(nextIndex, minAmount);
+                        }
+                    }
+                }
+                if(y + 1 < this.height){
+                    // bottom
+                    nextIndex = this.indexAtPosition(x, y + 1);
+                    if(this._matchIndexes.indexOf(nextIndex) === -1){
+                        // get cell if _matchIndexes don`t have it
+                        nextCell = this.at(nextIndex);
+                        if(currentCell.equals(nextCell)){
+                            this.getMatchIndexes(nextIndex, minAmount);
+                        }
+                    }
+                }
+                // column has nothing matches
+                this.isColumnMatch = false;
+                this._matchIndexes.length = 0; // clear previous matching indexes
+                this.getMatchIndexes(index, minAmount);
+            } else{
+            	// search by row
+                if(x + 1 < this.width){
+                    //right
+                    nextIndex = this.indexAtPosition(x + 1, y);
+                    if(this._matchIndexes.indexOf(nextIndex) === -1){
+                        // get cell if _matchIndexes don`t have it
+                        nextCell = this.at(nextIndex);
+                        if(currentCell.equals(nextCell)){
+                            this.getMatchIndexes(nextIndex, minAmount);
+                        }
+                    }
+                } else if(x - 1 >= 0){
+                    // left
+                    nextIndex = this.indexAtPosition(x - 1, y);
+                    if(this._matchIndexes.indexOf(nextIndex) === -1){
+                        // get cell if _matchIndexes don`t have it
+                        nextCell = this.at(nextIndex);
+                        if(currentCell.equals(nextCell)){
+                            this.getMatchIndexes(nextIndex, minAmount);
+                        }
+                    }
+                }
+                this.isColumnMatch = true;
+                this._matchIndexes.length = 0; // clear previous matching indexes
+                // nothing found
+                return [];
+            }
+		}
+	}
 };
+
+Board.prototype.
 
 /**
  * Tells whether the board  has appropriate amount of nearly standing equal cells
