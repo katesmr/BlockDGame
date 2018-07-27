@@ -155,8 +155,6 @@ Board.prototype.getMatchIndexes = function(index, minAmount){
 	}
 };
 
-Board.prototype.
-
 /**
  * Tells whether the board  has appropriate amount of nearly standing equal cells
  * @param {Number} minAmount - minium required amount of matched indexes
