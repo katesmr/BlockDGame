@@ -27,6 +27,7 @@ function Board(width, height){
 	this.height = height;
 
 	this._matchIndexes = [];
+	this.isMatching = true;
 
 	this._createData();
 }
@@ -87,6 +88,7 @@ Board.prototype.yAtIndex = function(index){
 Board.prototype.getMatchIndexes = function(index, minAmount){
 	var x, y, nextCell, nextIndex;
 	var currentCell = this.at(index);
+	// CLEAR PREVIOUS _matchIndexes
 	if(currentCell){
 		this._matchIndexes.push(index); // save current match index
 		x = this.xAtIndex(index);
@@ -94,6 +96,17 @@ Board.prototype.getMatchIndexes = function(index, minAmount){
 		if(y - 1 >= 0){
 			// top
 			nextIndex = this.indexAtPosition(x, y - 1);
+			if(this._matchIndexes.indexOf(nextIndex) === -1){
+				// get cell if _matchIndexes don`t have it
+				nextCell = this.at(nextIndex);
+				if(currentCell.equals(nextCell)){
+					this.getMatchIndexes(nextIndex, minAmount);
+				}
+			}
+		}
+		if(x + 1 < this.width){
+			//right
+			nextIndex = this.indexAtPosition(x + 1, y);
 			if(this._matchIndexes.indexOf(nextIndex) === -1){
 				// get cell if _matchIndexes don`t have it
 				nextCell = this.at(nextIndex);
@@ -113,17 +126,7 @@ Board.prototype.getMatchIndexes = function(index, minAmount){
 				}
 			}
 		}
-		if(x + 1 < this.width){
-			//right
-			nextIndex = this.indexAtPosition(x + 1, y);
-			if(this._matchIndexes.indexOf(nextIndex) === -1){
-				// get cell if _matchIndexes don`t have it
-				nextCell = this.at(nextIndex);
-				if(currentCell.equals(nextCell)){
-					this.getMatchIndexes(nextIndex, minAmount);
-				}
-			}
-		} else if(x - 1 >= 0){
+		if(x - 1 >= 0){
 			// left
 			nextIndex = this.indexAtPosition(x - 1, y);
 			if(this._matchIndexes.indexOf(nextIndex) === -1){

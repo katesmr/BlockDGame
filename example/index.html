@@ -7,11 +7,17 @@
 <canvas id="maze" width=400 height=500></canvas>
 <script src="../dist/dist.js"></script>
 <script>
-    var board = new game.Board(2, 3);
+    var board = new game.Board(5, 3);
     board.at(2).setValue(1);
+    board.at(3).setValue(1);
     board.at(4).setValue(1);
+    board.at(6).setValue(1);
+    board.at(7).setValue(1);
+    board.at(8).setValue(1);
+    board.at(9).setValue(1);
+    board.at(12).setValue(1);
 
-    console.log(board.getMatchIndexes(2, 2));
+    console.log(board.getMatchIndexes(8, 2));
 </script>
 </body>
 </html>
