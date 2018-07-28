@@ -79,15 +79,15 @@ Board.prototype.yAtIndex = function(index){
 
 /**
  * @param {Number} index - index of the initial cell to match with it's neighbours
- * @param {Number} minAmount - minium required amount of matched indexes
  * @return {Array} - list of matched indexes
  */
 Board.prototype.getMatchIndexes = function(index){
-	var initialCell = this.at(index).clone();
+	var initialCell;
 	var matchingIndexes = [];
-	var visitedCellIndexes = {};
-	if(initialCell){
-        this.__findEqualCells(index, initialCell, visitedCellIndexes, matchingIndexes);
+    var visitedCellIndexes = {};
+    initialCell = this.at(index);
+    if(initialCell){
+        this.__findEqualCells(index, initialCell.clone(), visitedCellIndexes, matchingIndexes);
     }
 	return matchingIndexes;
 };
@@ -96,14 +96,14 @@ Board.prototype.getMatchIndexes = function(index){
  *
  * @param index {Number}
  * @param initialCell {Cell}
- * @param visitedCellIndexes {Object}
- * @param matchingIndexes {Array}
+ * @param visitedCellIndexes {Object} - object which store indexes for check them on visiting
+ * @param matchingIndexes {Array} - result indexes list
  * @returns {*}
  * @private
  */
 Board.prototype.__findEqualCells = function(index, initialCell, visitedCellIndexes, matchingIndexes){
 	var x, y, nextIndex, nextCell;
-	visitedCellIndexes[index] = '';
+	visitedCellIndexes[index] = ''; // save index in object with no matter value
 	matchingIndexes.push(index);
 	x = this.xAtIndex(index);
 	y = this.yAtIndex(index);
