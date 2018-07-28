@@ -26,9 +26,6 @@ function Board(width, height){
 	 */
 	this.height = height;
 
-	this._matchIndexes = [];
-	this.isMatching = true;
-
 	this._createData();
 }
 
@@ -85,60 +82,75 @@ Board.prototype.yAtIndex = function(index){
  * @param {Number} minAmount - minium required amount of matched indexes
  * @return {Array} - list of matched indexes
  */
-Board.prototype.getMatchIndexes = function(index, minAmount){
-	var x, y, nextCell, nextIndex;
-	var currentCell = this.at(index);
-	// CLEAR PREVIOUS _matchIndexes
-	if(currentCell){
-		this._matchIndexes.push(index); // save current match index
-		x = this.xAtIndex(index);
-		y = this.yAtIndex(index);
-		if(y - 1 >= 0){
-			// top
-			nextIndex = this.indexAtPosition(x, y - 1);
-			if(this._matchIndexes.indexOf(nextIndex) === -1){
-				// get cell if _matchIndexes don`t have it
-				nextCell = this.at(nextIndex);
-				if(currentCell.equals(nextCell)){
-					this.getMatchIndexes(nextIndex, minAmount);
-				}
-			}
-		}
-		if(x + 1 < this.width){
-			//right
-			nextIndex = this.indexAtPosition(x + 1, y);
-			if(this._matchIndexes.indexOf(nextIndex) === -1){
-				// get cell if _matchIndexes don`t have it
-				nextCell = this.at(nextIndex);
-				if(currentCell.equals(nextCell)){
-					this.getMatchIndexes(nextIndex, minAmount);
-				}
-			}
-		}
-		if(y + 1 < this.height){
-			// bottom
-			nextIndex = this.indexAtPosition(x, y + 1);
-			if(this._matchIndexes.indexOf(nextIndex) === -1){
-				// get cell if _matchIndexes don`t have it
-				nextCell = this.at(nextIndex);
-				if(currentCell.equals(nextCell)){
-					this.getMatchIndexes(nextIndex, minAmount);
-				}
-			}
-		}
-		if(x - 1 >= 0){
-			// left
-			nextIndex = this.indexAtPosition(x - 1, y);
-			if(this._matchIndexes.indexOf(nextIndex) === -1){
-				// get cell if _matchIndexes don`t have it
-				nextCell = this.at(nextIndex);
-				if(currentCell.equals(nextCell)){
-					this.getMatchIndexes(nextIndex, minAmount);
-				}
+Board.prototype.getMatchIndexes = function(index){
+	var initialCell = this.at(index).clone();
+	var matchingIndexes = [];
+	var visitedCellIndexes = {};
+	if(initialCell){
+        this.__findEqualCells(index, initialCell, visitedCellIndexes, matchingIndexes);
+    }
+	return matchingIndexes;
+};
+
+/**
+ *
+ * @param index {Number}
+ * @param initialCell {Cell}
+ * @param visitedCellIndexes {Object}
+ * @param matchingIndexes {Array}
+ * @returns {*}
+ * @private
+ */
+Board.prototype.__findEqualCells = function(index, initialCell, visitedCellIndexes, matchingIndexes){
+	var x, y, nextIndex, nextCell;
+	visitedCellIndexes[index] = '';
+	matchingIndexes.push(index);
+	x = this.xAtIndex(index);
+	y = this.yAtIndex(index);
+	if(y - 1 >= 0){
+		// top
+		nextIndex = this.indexAtPosition(x, y - 1);
+		// get cell if it isn`t visited
+		if(!(visitedCellIndexes.hasOwnProperty(nextIndex))){
+			nextCell = this.at(nextIndex);
+			if(initialCell.equals(nextCell)){
+				this.__findEqualCells(nextIndex, initialCell, visitedCellIndexes, matchingIndexes);
 			}
 		}
 	}
-	return this._matchIndexes;
+	if(x + 1 < this.width){
+		//right
+		nextIndex = this.indexAtPosition(x + 1, y);
+		// get cell if it isn`t visited
+		if(!(visitedCellIndexes.hasOwnProperty(nextIndex))){
+            nextCell = this.at(nextIndex);
+            if(initialCell.equals(nextCell)){
+                this.__findEqualCells(nextIndex, initialCell, visitedCellIndexes, matchingIndexes);
+            }
+		}
+	}
+	if(y + 1 < this.height){
+		// bottom
+		nextIndex = this.indexAtPosition(x, y + 1);
+		// get cell if it isn`t visited
+		if(!(visitedCellIndexes.hasOwnProperty(nextIndex))){
+			nextCell = this.at(nextIndex);
+			if(initialCell.equals(nextCell)){
+				this.__findEqualCells(nextIndex, initialCell, visitedCellIndexes, matchingIndexes);
+			}
+		}
+	}
+	if(x - 1 >= 0){
+		// left
+		nextIndex = this.indexAtPosition(x - 1, y);
+		// get cell if it isn`t visited
+		if(!(visitedCellIndexes.hasOwnProperty(nextIndex))){
+			nextCell = this.at(nextIndex);
+			if(initialCell.equals(nextCell)){
+				this.__findEqualCells(nextIndex, initialCell, visitedCellIndexes, matchingIndexes);
+			}
+		}
+	}
 };
 
 /**

@@ -242,3 +242,11 @@ Cell.prototype.swap = function(cell){
     }
 	return true;
 };
+
+Cell.prototype.clone = function(){
+	var result = new Cell();
+	result.setValue(this.getValue());
+	result._type = this._type;
+	result._price = this.getPrice();
+	return result;
+};
