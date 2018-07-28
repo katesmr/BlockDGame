@@ -132,5 +132,106 @@ describe("Board", function(){
             expect(board.yAtIndex(5)).to.equal(1);
         });
     });
+
+    describe("getMatchIndexes()", function(){
+        it("find indexes of equal cells", function(){
+            var indexes;
+            var board = new Board(5, 3);
+            board.at(2).setValue(1);
+            board.at(3).setValue(1);
+            board.at(4).setValue(1);
+            board.at(6).setValue(1);
+            board.at(7).setValue(1);
+            board.at(8).setValue(1);
+            board.at(9).setValue(1);
+            board.at(12).setValue(1);
+
+            indexes = board.getMatchIndexes(8);
+            indexes.sort(function(a, b){
+                return a - b;
+            });
+            expect(indexes).to.eql([2, 3, 4, 6, 7, 8, 9, 12]);
+        });
+    });
+
+    describe("getMatchIndexes()", function(){
+        it("find indexes of equal cells", function(){
+            var indexes;
+            var board = new Board(4, 3);
+            board.at(1).setValue(1);
+            board.at(2).setValue(1);
+            board.at(3).setValue(1);
+            board.at(7).setValue(1);
+            board.at(11).setValue(1);
+
+            indexes = board.getMatchIndexes(3);
+            indexes.sort(function(a, b){
+                return a - b;
+            });
+            expect(indexes).to.eql([1, 2, 3, 7, 11]);
+        });
+    });
+
+    describe("getMatchIndexes()", function(){
+        it("find indexes of equal cells", function(){
+            var indexes;
+            var board = new Board(5, 3);
+            board.at(2).setValue(1);
+            board.at(5).setValue(1);
+            board.at(6).setValue(1);
+            board.at(7).setValue(1);
+            board.at(8).setValue(1);
+            board.at(12).setValue(1);
+
+            indexes = board.getMatchIndexes(6);
+            indexes.sort(function(a, b){
+                return a - b;
+            });
+            expect(indexes).to.eql([2, 5, 6, 7, 8, 12]);
+        });
+    });
+
+    describe("getMatchIndexes()", function(){
+        it("find indexes of equal cells", function(){
+            var indexes;
+            var board = new Board(3, 2);
+            board.at(2).setValue(1);
+            board.at(3).setValue(1);
+            board.at(4).setValue(1);
+
+            indexes = board.getMatchIndexes(2);
+            indexes.sort(function(a, b){
+                return a - b;
+            });
+            expect(indexes).to.eql([2]);
+        });
+    });
+
+    describe("getMatchIndexes()", function(){
+        it("find indexes of equal cells", function(){
+            var indexes;
+            var board = new Board(3, 2);
+            board.at(1).setValue(1);
+
+            indexes = board.getMatchIndexes(1);
+            indexes.sort(function(a, b){
+                return a - b;
+            });
+            expect(indexes).to.eql([1]);
+        });
+    });
+
+    describe("getMatchIndexes()", function(){
+        it("find indexes of equal cells", function(){
+            var indexes;
+            var board = new Board(3, 3);
+
+            indexes = board.getMatchIndexes(4);
+            indexes.sort(function(a, b){
+                return a - b;
+            });
+            expect(indexes).to.eql([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+        });
+    });
 });
 

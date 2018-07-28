@@ -264,5 +264,29 @@ describe("Cell", function(){
             expect(currentCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
         });
     });
+
+    describe("clone()", function(){
+        it("checks clone method", function(){
+            var cell = new Cell();
+            var newCell = cell.clone();
+            cell.transform(Cell.TYPE_EXTRA_BONUS);
+            expect(newCell.isType(Cell.TYPE_EXTRA_BONUS)).to.equal(false);
+            expect(newCell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+            expect(cell.isType(Cell.TYPE_EXTRA_BONUS)).to.equal(true);
+            expect(cell.isType(Cell.TYPE_NORMAL)).to.equal(false);
+        });
+    });
+
+    describe("clone()", function(){
+        it("checks clone method", function(){
+            var cell = new Cell();
+            var newCell = cell.clone();
+            newCell.transform(Cell.TYPE_EXTRA_BAD);
+            expect(newCell.isType(Cell.TYPE_EXTRA_BAD)).to.equal(true);
+            expect(newCell.isType(Cell.TYPE_NORMAL)).to.equal(false);
+            expect(cell.isType(Cell.TYPE_EXTRA_BAD)).to.equal(false);
+            expect(cell.isType(Cell.TYPE_NORMAL)).to.equal(true);
+        });
+    });
 });
 
