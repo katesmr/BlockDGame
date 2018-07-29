@@ -84,11 +84,11 @@ Board.prototype.yAtIndex = function(index){
 Board.prototype.getMatchIndexes = function(index){
 	var initialCell;
 	var matchingIndexes = [];
-    var visitedCellIndexes = {};
-    initialCell = this.at(index);
-    if(initialCell){
-        this.__findEqualCells(index, initialCell.clone(), visitedCellIndexes, matchingIndexes);
-    }
+	var visitedCellIndexes = {};
+	initialCell = this.at(index);
+	if(initialCell){
+		this.__findEqualCells(index, initialCell.clone(), visitedCellIndexes, matchingIndexes);
+	}
 	return matchingIndexes;
 };
 
@@ -103,7 +103,7 @@ Board.prototype.getMatchIndexes = function(index){
  */
 Board.prototype.__findEqualCells = function(index, initialCell, visitedCellIndexes, matchingIndexes){
 	var x, y, nextIndex, nextCell;
-	visitedCellIndexes[index] = ''; // save index in object with no matter value
+	visitedCellIndexes[index] = null; // save index in object with no matter value
 	matchingIndexes.push(index);
 	x = this.xAtIndex(index);
 	y = this.yAtIndex(index);
@@ -111,7 +111,7 @@ Board.prototype.__findEqualCells = function(index, initialCell, visitedCellIndex
 		// top
 		nextIndex = this.indexAtPosition(x, y - 1);
 		// get cell if it isn`t visited
-		if(!(visitedCellIndexes.hasOwnProperty(nextIndex))){
+		if(!(nextIndex in visitedCellIndexes)){
 			nextCell = this.at(nextIndex);
 			if(initialCell.equals(nextCell)){
 				this.__findEqualCells(nextIndex, initialCell, visitedCellIndexes, matchingIndexes);
@@ -122,18 +122,18 @@ Board.prototype.__findEqualCells = function(index, initialCell, visitedCellIndex
 		//right
 		nextIndex = this.indexAtPosition(x + 1, y);
 		// get cell if it isn`t visited
-		if(!(visitedCellIndexes.hasOwnProperty(nextIndex))){
-            nextCell = this.at(nextIndex);
-            if(initialCell.equals(nextCell)){
-                this.__findEqualCells(nextIndex, initialCell, visitedCellIndexes, matchingIndexes);
-            }
+		if(!(nextIndex in visitedCellIndexes)){
+			nextCell = this.at(nextIndex);
+			if(initialCell.equals(nextCell)){
+				this.__findEqualCells(nextIndex, initialCell, visitedCellIndexes, matchingIndexes);
+			}
 		}
 	}
 	if(y + 1 < this.height){
 		// bottom
 		nextIndex = this.indexAtPosition(x, y + 1);
 		// get cell if it isn`t visited
-		if(!(visitedCellIndexes.hasOwnProperty(nextIndex))){
+		if(!(nextIndex in visitedCellIndexes)){
 			nextCell = this.at(nextIndex);
 			if(initialCell.equals(nextCell)){
 				this.__findEqualCells(nextIndex, initialCell, visitedCellIndexes, matchingIndexes);
@@ -144,7 +144,7 @@ Board.prototype.__findEqualCells = function(index, initialCell, visitedCellIndex
 		// left
 		nextIndex = this.indexAtPosition(x - 1, y);
 		// get cell if it isn`t visited
-		if(!(visitedCellIndexes.hasOwnProperty(nextIndex))){
+		if(!(nextIndex in visitedCellIndexes)){
 			nextCell = this.at(nextIndex);
 			if(initialCell.equals(nextCell)){
 				this.__findEqualCells(nextIndex, initialCell, visitedCellIndexes, matchingIndexes);
@@ -159,5 +159,19 @@ Board.prototype.__findEqualCells = function(index, initialCell, visitedCellIndex
  * @return {Array} - list of matched indexes
  */
 Board.prototype.findMatchIndexes = function(minAmount){
-	return [];
+    var index, currentCell, matchingIndexes;
+    var result = [];
+    var noMatchingIndexes = {}; // save all free indexes or indexes groups less than minAmount
+    for(index = 0; index < this._data.length; ++index){
+        matchingIndexes = [];
+        currentCell = this.at(index);
+        if(!currentCell.isFree() && !(index in noMatchingIndexes)){
+            this.__findEqualCells(index, currentCell.clone(), noMatchingIndexes, matchingIndexes);
+            if(matchingIndexes.length >= minAmount){
+                result = matchingIndexes;
+                break;
+            }
+        }
+    }
+    return result;
 };
