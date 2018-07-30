@@ -39,7 +39,7 @@ BoardConsumer.prototype.getMatchIndexes = function(index){
 /**
  * Shift no empty cells to free cell
  */
-BoardConsumer.prototype.fallCell = function(){
+BoardConsumer.prototype.fall = function(){
     var index, x, y, cell, topCell;
     index = (this.__board.height * this.__board.width) - 1;
     for(index; index >= 0; --index){

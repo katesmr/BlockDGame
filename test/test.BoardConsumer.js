@@ -17,53 +17,53 @@ describe("BoardConsumer", function(){
         });
     });
 
-    describe("fallCell()", function(){
+    describe("fall()", function(){
         it("check indexes of free cell after fall in one row board", function(){
             var boardConsumer = new BoardConsumer(2, 1, 2);
             boardConsumer.at(0).setValue(Cell.FREE_CELL_VALUE);
 
-            boardConsumer.fallCell();
+            boardConsumer.fall();
             expect(boardConsumer.at(0).isFree()).to.eql(true);
         });
     });
 
-    describe("fallCell()", function(){
+    describe("fall()", function(){
         it("check indexes of free cell after fall over one cell", function(){
             var boardConsumer = new BoardConsumer(1, 3, 2);
             boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
 
-            boardConsumer.fallCell();
+            boardConsumer.fall();
             expect(boardConsumer.at(0).isFree()).to.eql(true);
         });
     });
 
-    describe("fallCell()", function(){
+    describe("fall()", function(){
         it("check indexes of free cell after fall over two cells", function(){
             var boardConsumer = new BoardConsumer(2, 4, 2);
             boardConsumer.at(3).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(5).setValue(Cell.FREE_CELL_VALUE);
 
-            boardConsumer.fallCell();
+            boardConsumer.fall();
             expect(boardConsumer.at(1).isFree()).to.eql(true);
             expect(boardConsumer.at(3).isFree()).to.eql(true);
         });
     });
 
-    describe("fallCell()", function(){
+    describe("fall()", function(){
         it("check indexes of free cell after fall over three cells", function(){
             var boardConsumer = new BoardConsumer(1, 4, 2);
             boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(2).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(3).setValue(Cell.FREE_CELL_VALUE);
 
-            boardConsumer.fallCell();
+            boardConsumer.fall();
             expect(boardConsumer.at(0).isFree()).to.eql(true);
             expect(boardConsumer.at(1).isFree()).to.eql(true);
             expect(boardConsumer.at(2).isFree()).to.eql(true);
         });
     });
 
-    describe("fallCell()", function(){
+    describe("fall()", function(){
         it("check indexes of free cells after fall", function(){
             var boardConsumer = new BoardConsumer(3, 4, 2);
             boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
@@ -72,7 +72,7 @@ describe("BoardConsumer", function(){
             boardConsumer.at(7).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(11).setValue(Cell.FREE_CELL_VALUE);
 
-            boardConsumer.fallCell();
+            boardConsumer.fall();
             expect(boardConsumer.at(0).isFree()).to.eql(true);
             expect(boardConsumer.at(1).isFree()).to.eql(true);
             expect(boardConsumer.at(2).isFree()).to.eql(true);
@@ -125,4 +125,3 @@ describe("BoardConsumer", function(){
         });
     });
 });
-
