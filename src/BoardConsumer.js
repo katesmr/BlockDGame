@@ -23,6 +23,10 @@ BoardConsumer.prototype._generate = function(maxValue){
     }
 };
 
+BoardConsumer.prototype.at = function(index){
+    return this.__board.at(index);
+};
+
 /**
  *
  * @param index {Number}
@@ -36,15 +40,21 @@ BoardConsumer.prototype.getMatchIndexes = function(index){
  * Shift no empty cells to free cell
  */
 BoardConsumer.prototype.fallCell = function(){
-    var i, y, cell;
-    i = this.__board.height - 1;
-    for(i; i >= 0; --i){
-        cell = this.__board.at(i);
-        if(cell.getValue() === Cell.FREE_CELL_VALUE){
-            y = this.__board.yAtIndex(i);
-            if(y - 1 >= 0){
-                // swap current cell with top cell
-                cell.swap(this.__board.at(y - 1));
+    var index, x, y, cell, topCell;
+    index = (this.__board.height * this.__board.width) - 1;
+    for(index; index >= 0; --index){
+        cell = this.__board.at(index);
+        if(cell.isFree()){
+            y = this.__board.yAtIndex(index); // y coord of current FREE cell
+            x = this.__board.xAtIndex(index); // x coord of current cell column
+            for(y - 1; y >= 0; --y){
+                // search first top no empty cell
+                topCell = this.__board.at(this.__board.indexAtPosition(x, y)); // get next top cell above current
+                if(!topCell.isFree()){
+                    // swap current cell with top cell
+                    cell.swap(topCell);
+                    break;
+                }
             }
         }
     }
