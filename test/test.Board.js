@@ -273,7 +273,7 @@ describe("Board", function(){
     });
 
     describe("getMatchIndexes()", function(){
-        it("find indexes of equal cells", function(){
+        it("find index of equal cells", function(){
             var indexes;
             var board = new Board(3, 2);
             board.at(1).setValue(1);
@@ -300,7 +300,7 @@ describe("Board", function(){
     });
 
     describe("getMatchIndexes()", function(){
-        it("find indexes of equal cells", function(){
+        it("find indexes of equal cells with no valid index of init cell", function(){
             var indexes;
             var board = new Board(3, 3);
 
@@ -354,7 +354,7 @@ describe("Board", function(){
     });
 
     describe("findMatchIndexes()", function(){
-        it("find first match indexes of equal cells", function(){
+        it("find first match indexes in board with group matching cells less than minAmount", function(){
             var indexes;
             var board = new Board(3, 4);
             board.at(5).setValue(1);
@@ -373,7 +373,7 @@ describe("Board", function(){
     });
 
     describe("findMatchIndexes()", function(){
-        it("find first match indexes of equal cells", function(){
+        it("find first match indexes in board with free cells", function(){
             var indexes;
             var board = new Board(3, 4);
 
@@ -382,4 +382,3 @@ describe("Board", function(){
         });
     });
 });
-
