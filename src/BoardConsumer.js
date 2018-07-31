@@ -1,11 +1,13 @@
 var Cell = require("./core/Cell.js");
 var Board = require("./core/Board.js");
+var Observer = require("observer");
+var commonEventNames = require("./core/commonEventNames.js");
 
 module.exports = BoardConsumer;
 
-function BoardConsumer(width, height, maxValue, bonusCondition){
+function BoardConsumer(width, height, maxValue){
     this.__board = new Board(width, height);
-    this.bonusCondition = bonusCondition;
+    this._observer = new Observer();
     this._generate(maxValue);
 }
 
@@ -40,7 +42,7 @@ BoardConsumer.prototype.getMatchIndexes = function(index){
  * Shift no empty cells to free cell
  */
 BoardConsumer.prototype.fall = function(){
-    var index, x, y, cell, topCell;
+    var index, x, y, cell, topCell, falledIndex;
     index = (this.__board.height * this.__board.width) - 1;
     for(index; index >= 0; --index){
         cell = this.__board.at(index);
@@ -49,10 +51,14 @@ BoardConsumer.prototype.fall = function(){
             x = this.__board.xAtIndex(index); // x coord of current cell column
             for(y - 1; y >= 0; --y){
                 // search first top no empty cell
-                topCell = this.__board.at(this.__board.indexAtPosition(x, y)); // get next top cell above current
+                falledIndex = this.__board.indexAtPosition(x, y);
+                topCell = this.__board.at(falledIndex); // get next top cell above current
                 if(!topCell.isFree()){
                     // swap current cell with top cell
-                    cell.swap(topCell);
+                    if(cell.swap(topCell) === true){
+                        this._observer.notify(commonEventNames.E_FALL_CELL,
+                                             {"currentIndex": index, "falledIndex": falledIndex});
+                    }
                     break;
                 }
             }
@@ -62,19 +68,28 @@ BoardConsumer.prototype.fall = function(){
 
 /**
  * Set free value to even cell from indexList
- * @param indexList
+ * @param indexList {Array}
+ * @param bonusCondition {Boolean} - true for bonus, false for bad
+ * @param priceIncreasor {Number}
  */
-BoardConsumer.prototype.destroyAtIndexes = function(indexList){
+BoardConsumer.prototype.destroyAtIndexes = function(indexList, bonusCondition, priceIncreasor){
     var i, count, cell, index;
     count = indexList.length;
     for(i = 0; i < count; ++i){
         index = indexList[i];
         cell = this.__board.at(index);
-        if(i === 0 && count >= this.bonusCondition){
-            // first index in indexList is index of selected cell by user
+        // first index in indexList is index of selected cell by user
+        if(i === 0 && bonusCondition === true){
             cell.transform(Cell.TYPE_EXTRA_BONUS); // convert selected cell to bonus type
+            cell.increasePrice(priceIncreasor);
+            this._observer.notify(commonEventNames.E_CELL_TO_BONUS, index);
+        } else if(i === 0 && bonusCondition === false){
+            cell.transform(Cell.TYPE_EXTRA_BAD); // convert selected cell to bad type
+            cell.increasePrice(priceIncreasor);
+            this._observer.notify(commonEventNames.E_CELL_TO_BAD, index);
         } else {
             cell.setValue(Cell.FREE_CELL_VALUE);
+            this._observer.notify(commonEventNames.E_CELL_TO_FREE, index);
         }
     }
 };

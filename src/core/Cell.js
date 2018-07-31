@@ -158,8 +158,10 @@ Cell.prototype.setValue = function(value){
 /**
  * Increase price value
  */
-Cell.prototype.increasePrice = function(){
-	if(this._price < Cell.PRICE_X5){
+Cell.prototype.increasePrice = function(priceIncreasor){
+	if(priceIncreasor){
+		this._price += priceIncreasor;
+	} else if(this._price < Cell.PRICE_X5){
 		this._price += Cell.PRICE_INCREASOR;
 	}
 };
