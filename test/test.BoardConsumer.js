@@ -68,7 +68,7 @@ describe("BoardConsumer", function(){
     });
 
     describe("fall()", function(){
-        it("check indexes of free cells after fall", function(){
+        it("check indexes of free cells beside of each other after fall", function(){
             var boardConsumer = new BoardConsumer(3, 4, 2);
             boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(4).setValue(Cell.FREE_CELL_VALUE);
@@ -93,7 +93,7 @@ describe("BoardConsumer", function(){
     });
 
     describe("fall()", function(){
-        it("check indexes of free cells after fall", function(){
+        it("check indexes of free cells with different places after fall", function(){
             var boardConsumer = new BoardConsumer(2, 5, 2);
             boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(2).setValue(Cell.FREE_CELL_VALUE);
@@ -135,7 +135,7 @@ describe("BoardConsumer", function(){
             expect(boardConsumer.at(7).isFree()).to.eql(false);
             expect(boardConsumer.at(8).isFree()).to.eql(false);
             expect(boardConsumer.at(9).isFree()).to.eql(false);
-            // check bonus cell after falling, it must be have a new index (bellow bonus)
+            // check bonus cell after falling, it must be have a new index (bellow bonus cell)
             expect(boardConsumer.at(6).isType(Cell.TYPE_EXTRA_BONUS)).to.eql(true);
             expect(boardConsumer.at(6).getPrice()).to.eql(Cell.PRICE_X2);
         });
@@ -215,7 +215,7 @@ describe("BoardConsumer", function(){
             expect(boardConsumer.at(11).isFree()).to.eql(false);
             // check transformed cell selected by user (first index of it cell in first parameter of function)
             expect(boardConsumer.at(4).isType(Cell.TYPE_EXTRA_BONUS)).to.eql(true);
-            expect(boardConsumer.at(4).getPrice()).to.eql(Cell.PRICE_X4);
+            expect(boardConsumer.at(4).getPrice()).to.eql(Cell.PRICE_X5);
         });
     });
 
@@ -237,7 +237,7 @@ describe("BoardConsumer", function(){
             expect(boardConsumer.at(8).isFree()).to.eql(false);
             // check transformed cell selected by user (first index of it cell in first parameter of function)
             expect(boardConsumer.at(5).isType(Cell.TYPE_EXTRA_BAD)).to.eql(true);
-            expect(boardConsumer.at(5).getPrice()).to.eql(Cell.PRICE_X3);
+            expect(boardConsumer.at(5).getPrice()).to.eql(Cell.PRICE_X4);
 
         });
     });
