@@ -1,6 +1,6 @@
 var Cell = require("./core/Cell.js");
 var Board = require("./core/Board.js");
-var Observer = require("observer");
+var Observer = require("./core/Observer.js");
 var commonEventNames = require("./core/commonEventNames.js");
 
 module.exports = BoardConsumer;
@@ -23,6 +23,14 @@ BoardConsumer.prototype._generate = function(maxValue){
         cell = this.__board.at(i);
         cell.setValue(Math.floor(Math.random() * (maxValue + 1)));
     }
+};
+
+BoardConsumer.prototype.subscribe = function(eventName, handler){
+    this._observer.subscribe(eventName, handler);
+};
+
+BoardConsumer.prototype.unsubscribe = function(eventName, handler){
+    this._observer.unsubscribe(eventName, handler);
 };
 
 BoardConsumer.prototype.at = function(index){
@@ -94,6 +102,18 @@ BoardConsumer.prototype.destroyAtIndexes = function(indexList, bonusCondition, p
     }
 };
 
-BoardConsumer.prototype.getReward = function(){
-
+/**
+ * Compute total scope for cells by indexes in list
+ * @param indexList {Array}
+ * @returns {Number}
+ */
+BoardConsumer.prototype.getReward = function(indexList){
+    var i, cellList, count, result;
+    cellList = [];
+    count = indexList.length;
+    for(i = 0; i < count; ++i){
+        cellList.push(this.at(indexList[i]));
+    }
+    result = Cell.computeScore(cellList);
+    return result;
 };
