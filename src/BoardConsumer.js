@@ -5,10 +5,9 @@ var commonEventNames = require("./core/commonEventNames.js");
 
 module.exports = BoardConsumer;
 
-function BoardConsumer(width, height, maxValue){
+function BoardConsumer(width, height){
     this.__board = new Board(width, height);
     this._observer = new Observer();
-    this._generate(maxValue);
 }
 
 /**
@@ -35,6 +34,45 @@ BoardConsumer.prototype.unsubscribe = function(eventName, handler){
 
 BoardConsumer.prototype.at = function(index){
     return this.__board.at(index);
+};
+
+BoardConsumer.prototype.xAtIndex = function(index){
+    return this.__board.xAtIndex(index);
+};
+
+BoardConsumer.prototype.yAtIndex = function(index){
+    return this.__board.yAtIndex(index);
+};
+
+/**
+ * Send notify message with cell index and value
+ * @param index
+ */
+BoardConsumer.prototype.sendCellValue = function(index){
+    var cell = this.at(index);
+    if(cell){
+        this._observer.notify(commonEventNames.E_CELL_VALUE, {"index": index, "value": cell.getValue()});
+    }
+};
+
+/**
+ * Send notify message with all cell index and value
+ */
+BoardConsumer.prototype.getCellsValue = function(){
+    var i, count;
+    count = this.__board.width * this.__board.height;
+    for(i = 0; i < count; ++i){
+        this.sendCellValue(i);
+    }
+};
+
+/**
+ * Generate board and send notify with cell data
+ * @param maxValue {Number} - maximum value for cell
+ */
+BoardConsumer.prototype.generate = function(maxValue){
+    this._generate(maxValue);
+    this.getCellsValue();
 };
 
 /**

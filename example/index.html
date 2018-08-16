@@ -5,17 +5,10 @@
 </head>
 <body>
 <canvas id="maze" width=400 height=500></canvas>
+<script src="../sources/phaser.js"></script>
 <script src="../dist/dist.js"></script>
 <script>
-    var boardConsumer = new game.BoardConsumer(3, 4, 6);
-    boardConsumer.at(0).setValue(1);
-    boardConsumer.at(3).setValue(1);
-    boardConsumer.at(4).setValue(1);
-    boardConsumer.at(6).setValue(1);
-    boardConsumer.at(7).setValue(1);
-    boardConsumer.at(10).setValue(1);
 
-    boardConsumer.destroyAtIndexes([4, 7, 10, 6, 3, 0], true, 3);
 </script>
 </body>
 </html>
