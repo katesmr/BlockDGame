@@ -1,19 +1,40 @@
+var expect = require("chai").expect;
 var BoardConsumer = require("../src/BoardConsumer.js");
 var Cell = require("../src/core/Cell.js");
-var expect = require("chai").expect;
+var commonEventNames = require("../src/core/commonEventNames.js");
 
 describe("BoardConsumer", function(){
     describe("new BoardConsumer", function(){
         it("creates Board object", function(){
-            var board = new BoardConsumer(1, 1, 1);
+            var boardConsumer = new BoardConsumer(1, 1);
+            boardConsumer.generate(1);
 
-            expect(board.constructor).to.equal(BoardConsumer);
+            expect(boardConsumer.constructor).to.equal(BoardConsumer);
+        });
+    });
+
+    describe("getCellsValue()", function(){
+        it("check notify count", function(){
+            var counter = 0;
+            var width = 2;
+            var height = 3;
+            var boardConsumer = new BoardConsumer(width, height);
+            boardConsumer.generate(1);
+
+            boardConsumer.subscribe(commonEventNames.E_CELL_VALUE, function(eventName, data){
+                ++counter;
+                if(data.index === (width * height - 1)){
+                    // when get all cell, counter must be equal total cells count
+                    expect(counter).to.equal(width * height);
+                }
+            });
         });
     });
 
     describe("fall()", function(){
         it("check indexes of free cell after fall in one row board", function(){
-            var boardConsumer = new BoardConsumer(2, 1, 2);
+            var boardConsumer = new BoardConsumer(2, 1);
+            boardConsumer.generate(2);
             boardConsumer.at(0).setValue(Cell.FREE_CELL_VALUE);
 
             boardConsumer.fall();
@@ -24,7 +45,8 @@ describe("BoardConsumer", function(){
 
     describe("fall()", function(){
         it("check indexes of free cell after fall over one cell", function(){
-            var boardConsumer = new BoardConsumer(1, 3, 2);
+            var boardConsumer = new BoardConsumer(1, 3);
+            boardConsumer.generate(2);
             boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
 
             boardConsumer.fall();
@@ -36,7 +58,8 @@ describe("BoardConsumer", function(){
 
     describe("fall()", function(){
         it("check indexes of free cell after fall over two cells", function(){
-            var boardConsumer = new BoardConsumer(2, 4, 2);
+            var boardConsumer = new BoardConsumer(2, 4);
+            boardConsumer.generate(2);
             boardConsumer.at(3).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(5).setValue(Cell.FREE_CELL_VALUE);
 
@@ -54,7 +77,8 @@ describe("BoardConsumer", function(){
 
     describe("fall()", function(){
         it("check indexes of free cell after fall over three cells", function(){
-            var boardConsumer = new BoardConsumer(1, 4, 2);
+            var boardConsumer = new BoardConsumer(1, 4);
+            boardConsumer.generate(2);
             boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(2).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(3).setValue(Cell.FREE_CELL_VALUE);
@@ -69,7 +93,8 @@ describe("BoardConsumer", function(){
 
     describe("fall()", function(){
         it("check indexes of free cells beside of each other after fall", function(){
-            var boardConsumer = new BoardConsumer(3, 4, 2);
+            var boardConsumer = new BoardConsumer(3, 4);
+            boardConsumer.generate(2);
             boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(4).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(6).setValue(Cell.FREE_CELL_VALUE);
@@ -94,7 +119,8 @@ describe("BoardConsumer", function(){
 
     describe("fall()", function(){
         it("check indexes of free cells with different places after fall", function(){
-            var boardConsumer = new BoardConsumer(2, 5, 2);
+            var boardConsumer = new BoardConsumer(2, 5);
+            boardConsumer.generate(2);
             boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(2).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(6).setValue(Cell.FREE_CELL_VALUE);
@@ -116,7 +142,8 @@ describe("BoardConsumer", function(){
 
     describe("fall()", function(){
         it("check indexes of free cells after fall with bonus cell", function(){
-            var boardConsumer = new BoardConsumer(2, 5, 2);
+            var boardConsumer = new BoardConsumer(2, 5);
+            boardConsumer.generate(2);
             boardConsumer.at(2).transform(Cell.TYPE_EXTRA_BONUS);
             boardConsumer.at(3).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(4).setValue(Cell.FREE_CELL_VALUE);
@@ -143,7 +170,8 @@ describe("BoardConsumer", function(){
 
     describe("fall()", function(){
         it("check indexes of free cells after fall with bad cell", function(){
-            var boardConsumer = new BoardConsumer(3, 3, 2);
+            var boardConsumer = new BoardConsumer(3, 3);
+            boardConsumer.generate(2);
             boardConsumer.at(1).transform(Cell.TYPE_EXTRA_BAD);
             boardConsumer.at(2).setValue(Cell.FREE_CELL_VALUE);
             boardConsumer.at(3).setValue(Cell.FREE_CELL_VALUE);
@@ -168,7 +196,8 @@ describe("BoardConsumer", function(){
 
     describe("destroyAtIndexes()", function(){
         it("check indexes of free cells after destruction without bonus/bad type", function(){
-            var boardConsumer = new BoardConsumer(3, 4, 2);
+            var boardConsumer = new BoardConsumer(3, 4);
+            boardConsumer.generate(2);
             boardConsumer.at(1).setValue(1);
             boardConsumer.at(4).setValue(1);
             boardConsumer.at(6).setValue(1);
@@ -192,7 +221,8 @@ describe("BoardConsumer", function(){
 
     describe("destroyAtIndexes()", function(){
         it("check indexes of free cells after destruction with bonus type", function(){
-            var boardConsumer = new BoardConsumer(3, 4, 6);
+            var boardConsumer = new BoardConsumer(3, 4);
+            boardConsumer.generate(6);
             boardConsumer.at(0).setValue(1);
             boardConsumer.at(3).setValue(1);
             boardConsumer.at(4).setValue(1);
@@ -221,7 +251,8 @@ describe("BoardConsumer", function(){
 
     describe("destroyAtIndexes()", function(){
         it("check indexes of free cells after destruction with bad type", function(){
-            var boardConsumer = new BoardConsumer(3, 3, 6);
+            var boardConsumer = new BoardConsumer(3, 3);
+            boardConsumer.generate(6);
             boardConsumer.at(4).setValue(1);
             boardConsumer.at(5).setValue(1);
 
@@ -244,7 +275,8 @@ describe("BoardConsumer", function(){
 
     describe("destroyAtIndexes()", function(){
         it("check indexes of free cells after destruction in one row board", function(){
-            var boardConsumer = new BoardConsumer(3, 1, 2);
+            var boardConsumer = new BoardConsumer(3, 1);
+            boardConsumer.generate(2);
             boardConsumer.at(1).setValue(1);
             boardConsumer.at(2).setValue(1);
 
@@ -256,7 +288,8 @@ describe("BoardConsumer", function(){
 
     describe("destroyAtIndexes()", function(){
         it("check indexes of free cells after destruction all board", function(){
-            var boardConsumer = new BoardConsumer(2, 2, 2);
+            var boardConsumer = new BoardConsumer(2, 2);
+            boardConsumer.generate(2);
             boardConsumer.at(0).setValue(1);
             boardConsumer.at(1).setValue(1);
             boardConsumer.at(2).setValue(1);
