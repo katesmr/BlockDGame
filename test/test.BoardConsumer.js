@@ -13,7 +13,7 @@ describe("BoardConsumer", function(){
         });
     });
 
-    describe("getCellsValue()", function(){
+    describe("sendCellsValue()", function(){
         it("check notify count", function(){
             var counter = 0;
             var width = 2;

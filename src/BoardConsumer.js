@@ -58,7 +58,7 @@ BoardConsumer.prototype.sendCellValue = function(index){
 /**
  * Send notify message with all cell index and value
  */
-BoardConsumer.prototype.getCellsValue = function(){
+BoardConsumer.prototype.sendCellsValue = function(){
     var i, count;
     count = this.__board.width * this.__board.height;
     for(i = 0; i < count; ++i){
@@ -72,7 +72,7 @@ BoardConsumer.prototype.getCellsValue = function(){
  */
 BoardConsumer.prototype.generate = function(maxValue){
     this._generate(maxValue);
-    this.getCellsValue();
+    this.sendCellsValue();
 };
 
 /**

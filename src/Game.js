@@ -1,3 +1,4 @@
+var config = require("../config/config.js");
 var BoardConsumer = require("./BoardConsumer.js");
 
 class Game extends Phaser.Scene {
@@ -5,7 +6,7 @@ class Game extends Phaser.Scene {
         super({key: "Game"});
         this.group = null;
         this.groupChildren = null;
-        this.boardConsumer = new BoardConsumer(3, 4);
+        this.boardConsumer = new BoardConsumer(config.width, config.height);
 
         this.boardConsumer.subscribe("E_CELL_VALUE", this._updateFrameValue.bind(this));
     }
@@ -30,10 +31,12 @@ class Game extends Phaser.Scene {
     generateDefaultBoard(){
         var i, y, count;
         var frames = [];
-        y = 50;
-        for(i = 0; i < 4; ++i){
-            frames.push({key: "cat", frame: 0, repeat: 2, setXY: {x: 50, y: y, stepX: 100}});
-            y += 100;
+        var repeatCount = config.width - 1;
+        y = config.sprite.y;
+        for(i = 0; i < config.height; ++i){
+            frames.push({key: "cat", frame: 0, repeat: repeatCount,
+                         setXY: {x: config.sprite.x, y: y, stepX: config.sprite.xStep}});
+            y += config.sprite.yStep;
         }
 
         this.group = this.add.group(frames);
