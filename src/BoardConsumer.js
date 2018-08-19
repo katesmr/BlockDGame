@@ -103,7 +103,7 @@ BoardConsumer.prototype.fall = function(){
                     // swap current cell with top cell
                     if(cell.swap(topCell) === true){
                         this._observer.notify(commonEventNames.E_FALL_CELL,
-                                             {"currentIndex": index, "falledIndex": falledIndex});
+                                             {"toIndex": index, "fromIndex": falledIndex});
                     }
                     break;
                 }
@@ -115,8 +115,8 @@ BoardConsumer.prototype.fall = function(){
 /**
  * Set free value to even cell from indexList
  * @param indexList {Array}
- * @param bonusCondition {Boolean} - true for bonus, false for bad
- * @param priceIncreasor {Number}
+ * @param [bonusCondition] {Boolean} - true for bonus, false for bad
+ * @param [priceIncreasor] {Number}
  */
 BoardConsumer.prototype.destroyAtIndexes = function(indexList, bonusCondition, priceIncreasor){
     var i, count, cell, index;
@@ -154,4 +154,24 @@ BoardConsumer.prototype.getReward = function(indexList){
     }
     result = Cell.computeScore(cellList);
     return result;
+};
+
+BoardConsumer.prototype.showBoard = function(){
+    var i, j, cell, cellView;
+    var index = 0;
+    var tmp;
+    for(i = 0; i < this.__board.height; ++i){
+        tmp = [];
+        for(j = 0; j < this.__board.width; ++j){
+            cell = this.at(index);
+            if(cell.isFree()){
+                cellView = " ";
+            } else{
+                cellView = "#";
+            }
+            tmp.push(cellView);
+            ++index;
+        }
+        console.log(tmp);
+    }
 };

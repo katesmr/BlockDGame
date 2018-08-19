@@ -4,6 +4,7 @@ var webpack = require("webpack");
 
 module.exports = {
     "entry": "./src/index.js",
+    "devtool": "eval-source-map",
     "module": {
         "loaders": [
             {
