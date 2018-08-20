@@ -16,7 +16,7 @@ class Game extends Phaser.Scene {
     }
 
     preload(){
-        this.load.spritesheet("cat", "../assets/cat.png", {frameWidth: 97, frameHeight: 59, endFrame: 5});
+        this.load.spritesheet("cat", "../assets/colors.png", {frameWidth: 60, frameHeight: 60, endFrame: 5});
     }
 
     create(){
@@ -56,27 +56,25 @@ class Game extends Phaser.Scene {
     }
 
     _fallCell(eventName, data){
-        var tween, tmp, self;
+        var self;
         // get sprite by board position by init ordering
         var toIndex = this.groupChildren[data.toIndex];
         var fromIndexOnView = this.groupChildren[data.fromIndex];
         var fromIndex = this.findChildByCellIndex(data.fromIndex); // get visible sprite which was replaced
         if(toIndex && fromIndex !== null){
             self = this;
-            tween = this.tweens.add({
+            this.tweens.add({
                 targets: fromIndex,
                 y: toIndex.y,
                 duration: 500,
                 ease: "Bounce",
                 repeat: 0,
-                yoyo: false,
                 onComplete: function(){
-
+                    // delete tween from sprite
+                    self.tweens.killTweensOf(fromIndex);
                 }
             }, this);
-            tmp = fromIndexOnView.cellIndex;
-            fromIndexOnView.cellIndex = toIndex.cellIndex;
-            toIndex.cellIndex = tmp;
+            this.swapSpriteCellIndex(fromIndexOnView, toIndex);
         }
     }
 
@@ -111,6 +109,12 @@ class Game extends Phaser.Scene {
             result = this.groupChildren[child.cellIndex];
         }
         return result;
+    }
+
+    swapSpriteCellIndex(sprite1, sprite2){
+        var tmp = sprite1.cellIndex;
+        sprite1.cellIndex = sprite2.cellIndex;
+        sprite2.cellIndex = tmp;
     }
 
     findChildByIndex(index){
