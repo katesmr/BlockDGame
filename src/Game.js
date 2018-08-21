@@ -11,8 +11,10 @@ class Game extends Phaser.Scene {
         this.boardConsumer = new BoardConsumer(config.width, config.height);
 
         this.boardConsumer.subscribe(commonEventNames.E_CELL_VALUE, this._updateFrameValue.bind(this));
-        this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_FREE, this._freeCell.bind(this));
+        this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_FREE, this._cellToFree.bind(this));
         this.boardConsumer.subscribe(commonEventNames.E_FALL_CELL, this._fallCell.bind(this));
+        this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_BONUS, this._cellToBonus.bind(this));
+        this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_BAD, this._cellToBad.bind(this));
     }
 
     preload(){
@@ -21,24 +23,57 @@ class Game extends Phaser.Scene {
 
     create(){
         this.generateDefaultBoard();
-
-        this.boardConsumer.generate(5);
-
+        this.boardConsumer.generate(3);
 
         // ---------------------- test
 
-        this.boardConsumer.destroyAtIndexes([5, 6, 7, 8]);
+        console.log(this.groupChildren);
+        this.input.on("pointerdown", function(event){
+            var i, currentChild, childXStartPoint, childYStartPoint, childXEndPoint, childYEndPoint, countMatchChildren;
+            var result = null;
+            var halfXLength = config.sprite.xStep / 2;
+            var halfYLength = config.sprite.yStep / 2;
+            var count = this.groupChildren.length;
+            for(i = 0; i < count; ++i){
+                currentChild = this.groupChildren[i];
+                childXStartPoint = currentChild.x - halfXLength;
+                childYStartPoint = currentChild.y - halfYLength;
+                childXEndPoint = currentChild.x + halfXLength;
+                childYEndPoint = currentChild.y + halfYLength;
+                if((childXStartPoint <= event.x && event.x <= childXEndPoint) &&
+                   (childYStartPoint <= event.y && event.y <= childYEndPoint)){
+                    result = this.boardConsumer.getMatchIndexes(i);
+                    countMatchChildren = result.length;
+                    if(countMatchChildren >= config.BlockAmountToBonus){
+                        //this.boardConsumer.destroyAtIndexes(result, true, Cell.PRICE_INCREASOR);
+                    } else if(countMatchChildren >= config.minBlockAmount && countMatchChildren <= config.BlockAmountToBonus){
+                        //this.boardConsumer.destroyAtIndexes(result);
+                    } else if(countMatchChildren > 0 && countMatchChildren < config.minBlockAmount){
+                        //this.boardConsumer.destroyAtIndexes(result, false, Cell.PRICE_DECREASOR);
+                    }
+                    this.boardConsumer.fall();
+                    break;
+                }
+            }
+        }, this);
 
-        this.boardConsumer.fall();
+        //this.boardConsumer.destroyAtIndexes([5, 6, 7, 8]);
 
-        var self = this;
+        //this.boardConsumer.fall();
+
+        /*var self = this;
         setTimeout(function(){
             self.boardConsumer.destroyAtIndexes([6]);
             self.boardConsumer.fall();
             self.boardConsumer.showBoard();
-        }, 1000);
+        }, 1000);*/
 
-        console.log(this.groupChildren);
+    }
+
+    static _swapSpriteCellIndex(sprite1, sprite2){
+        var tmp = sprite1.cellIndex;
+        sprite1.cellIndex = sprite2.cellIndex;
+        sprite2.cellIndex = tmp;
     }
 
     _updateFrameValue(eventName, cellData){
@@ -48,16 +83,9 @@ class Game extends Phaser.Scene {
         }
     }
 
-    _freeCell(eventName, index){
-        var spriteToFree = this.findChildByCellIndex(index);
-        if(spriteToFree !== null){
-            spriteToFree.setVisible(false);
-        }
-    }
-
     _fallCell(eventName, data){
         var self;
-        // get sprite by board position by init ordering
+        // get sprite from group by index
         var toIndex = this.groupChildren[data.toIndex];
         var fromIndexOnView = this.groupChildren[data.fromIndex];
         var fromIndex = this.findChildByCellIndex(data.fromIndex); // get visible sprite which was replaced
@@ -74,7 +102,29 @@ class Game extends Phaser.Scene {
                     self.tweens.killTweensOf(fromIndex);
                 }
             }, this);
-            this.swapSpriteCellIndex(fromIndexOnView, toIndex);
+            Game._swapSpriteCellIndex(fromIndexOnView, toIndex);
+        }
+    }
+
+    _cellToFree(eventName, index){
+        var spriteToFree = this.findChildByCellIndex(index);
+        if(spriteToFree !== null){
+            spriteToFree.setVisible(false);
+        }
+    }
+
+    _cellToBonus(eventName, index){
+        this.__changeFrame(index, config.sprite.bonusIndex);
+    }
+
+    _cellToBad(eventName, index){
+        this.__changeFrame(index, config.sprite.badIndex);
+    }
+
+    __changeFrame(index, frameNumber){
+        var spriteToFree = this.findChildByCellIndex(index);
+        if(spriteToFree !== null){
+            spriteToFree.setFrame(frameNumber);
         }
     }
 
@@ -99,7 +149,7 @@ class Game extends Phaser.Scene {
     }
 
     /**
-     * Return sprite of group of corresponded cellIndex which contain in sprite by childIndex
+     * Return sprite which index in group equal to cellIndex of sprite which index expect method
      * @param childIndex {Number}
      */
     findChildByCellIndex(childIndex){
@@ -107,26 +157,6 @@ class Game extends Phaser.Scene {
         var child = this.groupChildren[childIndex];
         if(child){
             result = this.groupChildren[child.cellIndex];
-        }
-        return result;
-    }
-
-    swapSpriteCellIndex(sprite1, sprite2){
-        var tmp = sprite1.cellIndex;
-        sprite1.cellIndex = sprite2.cellIndex;
-        sprite2.cellIndex = tmp;
-    }
-
-    findChildByIndex(index){
-        var i, currentChild;
-        var result = null;
-        var count = this.groupChildren.length;
-        for(i = 0; i < count; ++i){
-            currentChild = this.groupChildren[i];
-            if(currentChild.cellIndex === index) {
-                result = currentChild;
-                break;
-            }
         }
         return result;
     }
