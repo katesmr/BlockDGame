@@ -141,6 +141,96 @@ BoardConsumer.prototype.destroyAtIndexes = function(indexList, bonusCondition, p
 };
 
 /**
+ * Begin swap columns from the bottom
+ * @param indexFirstColumn
+ * @param indexSecondColumn
+ */
+BoardConsumer.prototype.swapColumns = function(indexFirstColumn, indexSecondColumn){
+    var fromIndex, toIndex;
+    var x1 = this.__board.xAtIndex(indexFirstColumn);
+    var x2 = this.__board.xAtIndex(indexSecondColumn);
+    var y = this.__board.yAtIndex(indexFirstColumn);
+    for(y; y >= 0; --y){
+        // swap between columns
+        toIndex = this.__board.indexAtPosition(x1, y);
+        fromIndex = this.__board.indexAtPosition(x2, y);
+        if(this.__board.at(toIndex).swap(this.__board.at(fromIndex)) === true){
+            this._observer.notify(commonEventNames.E_SHIFT_CELL, {"fromIndex": fromIndex, "toIndex": toIndex});
+        }
+    }
+};
+
+/**
+ * Get index of bottom cell and shift columns towards to center
+ * Determine which side to do shift
+ * @param toSlide {Number} - index of free cell
+ */
+BoardConsumer.prototype._shiftToCenter = function(toSlide){
+    var index, count, xPosition;
+    var halfWidth = Math.floor(this.__board.width / 2); // value of center x
+    if(this.__board.width % 2 !== 0){
+        if(toSlide === halfWidth + 1){
+            // case when empty column in center board with odd width of board
+        }
+    }
+    index = toSlide;
+    xPosition = this.__board.xAtIndex(toSlide);
+    if(xPosition >= 0 && xPosition < halfWidth){
+        // shift to right side
+        for(xPosition; xPosition > 0; --xPosition){
+            --index;
+            // swap with only no empty cells
+            if(!this.__board.at(index).isFree()){
+                this.swapColumns(toSlide, index);
+            }
+        }
+    } else if(xPosition >= halfWidth && xPosition < this.__board.width){
+        // shift to left side
+        count = this.__board.width * this.__board.height - 1;
+        for(index; index < count; ++index){
+            // swap with only no empty cells
+            if(!this.__board.at(index + 1).isFree()) {
+                this.swapColumns(index, index + 1);
+            }
+        }
+    }
+};
+
+/**
+ * Search in bottom cells free cell and check its columns is free too
+ */
+BoardConsumer.prototype.slide = function(){
+    var i, cell, index, x, y, topCell;
+    var firstNoEmptyCellIndex = -1;
+    index = (this.__board.width * this.__board.height) - 1;
+    for(i = 0; i < this.__board.width; ++i){
+        cell = this.__board.at(index);
+        if(cell.isFree() && firstNoEmptyCellIndex !== -1){
+            // case when founded free cell after no empty cell
+            x = this.__board.xAtIndex(index);
+            y = this.__board.yAtIndex(index) - 1;
+            for(y; y >= 0; --y){
+                // check that full column has free cells
+                topCell = this.__board.at(this.__board.indexAtPosition(x, y));
+                if(topCell.isFree()){
+                    if(y === 0){
+                        // swap current free and no empty columns and shift to center
+                        this._shiftToCenter(index);
+                    }
+                } else{
+                    // exit when founded first no empty cell
+                    break;
+                }
+            }
+        } else if(!cell.isFree() && firstNoEmptyCellIndex === -1){
+            // case when founded fist no empty cell
+            firstNoEmptyCellIndex = index;
+        }
+        --index;
+    }
+};
+
+/**
  * Compute total scope for cells by indexes in list
  * @param indexList {Array}
  * @returns {Number}
