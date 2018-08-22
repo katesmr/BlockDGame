@@ -302,4 +302,175 @@ describe("BoardConsumer", function(){
             expect(boardConsumer.at(3).isFree()).to.eql(true);
         });
     });
+
+    describe("swapColumns()", function(){
+        it("check cells value after swap columns", function(){
+            var boardConsumer = new BoardConsumer(2, 3);
+            boardConsumer.generate(2);
+            boardConsumer.at(0).setValue(1);
+            boardConsumer.at(1).setValue(2);
+            boardConsumer.at(2).setValue(1);
+            boardConsumer.at(3).setValue(2);
+            boardConsumer.at(4).setValue(1);
+            boardConsumer.at(5).setValue(2);
+
+            boardConsumer.swapColumns(4, 5);
+            expect(boardConsumer.at(0).getValue()).to.equal(2);
+            expect(boardConsumer.at(1).getValue()).to.equal(1);
+            expect(boardConsumer.at(2).getValue()).to.equal(2);
+            expect(boardConsumer.at(3).getValue()).to.equal(1);
+            expect(boardConsumer.at(4).getValue()).to.equal(2);
+            expect(boardConsumer.at(5).getValue()).to.equal(1);
+        });
+    });
+
+    describe("swapColumns()", function(){
+        it("check count notifications after swap columns", function(){
+            var counter = 0;
+            var boardConsumer = new BoardConsumer(3, 3);
+            boardConsumer.generate(2);
+
+            boardConsumer.subscribe(commonEventNames.E_SHIFT_CELL, function(eventName, data){
+                ++counter;
+                if(data.index === 0){
+                    // when get all cell, counter must be equal total cells count
+                    expect(counter).to.equal(6);
+                }
+            });
+
+            boardConsumer.swapColumns(6, 8);
+        });
+    });
+
+    describe("slide()", function(){
+        it("check column indexes after try to shift no free cells", function(){
+            var boardConsumer = new BoardConsumer(3, 2);
+            boardConsumer.generate(3);
+            // after trying slide no empty columns, nothing should be change
+            boardConsumer.slide();
+            expect(boardConsumer.at(0).isFree()).to.eql(false);
+            expect(boardConsumer.at(1).isFree()).to.eql(false);
+            expect(boardConsumer.at(2).isFree()).to.eql(false);
+            expect(boardConsumer.at(3).isFree()).to.eql(false);
+            expect(boardConsumer.at(4).isFree()).to.eql(false);
+            expect(boardConsumer.at(5).isFree()).to.eql(false);
+        });
+    });
+
+    describe("slide()", function(){
+        it("check column indexes after shift", function(){
+            var boardConsumer = new BoardConsumer(6, 2);
+            boardConsumer.generate(3);
+            boardConsumer.at(2).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(4).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(8).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(10).setValue(Cell.FREE_CELL_VALUE);
+            // slide across single free columns
+            boardConsumer.slide();
+            expect(boardConsumer.at(0).isFree()).to.eql(true);
+            expect(boardConsumer.at(5).isFree()).to.eql(true);
+            expect(boardConsumer.at(6).isFree()).to.eql(true);
+            expect(boardConsumer.at(11).isFree()).to.eql(true);
+        });
+    });
+
+    describe("slide()", function(){
+        it("check column indexes after shift", function(){
+            var boardConsumer = new BoardConsumer(6, 2);
+            boardConsumer.generate(3);
+            boardConsumer.at(2).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(3).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(8).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(9).setValue(Cell.FREE_CELL_VALUE);
+            // slide across single free columns
+            boardConsumer.slide();
+            expect(boardConsumer.at(0).isFree()).to.eql(true);
+            expect(boardConsumer.at(5).isFree()).to.eql(true);
+            expect(boardConsumer.at(6).isFree()).to.eql(true);
+            expect(boardConsumer.at(11).isFree()).to.eql(true);
+        });
+    });
+
+    describe("slide()", function(){
+        it("check column indexes after shift", function(){
+            var boardConsumer = new BoardConsumer(6, 2);
+            boardConsumer.generate(3);
+            boardConsumer.at(0).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(3).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(6).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(9).setValue(Cell.FREE_CELL_VALUE);
+            // slide across single free columns
+            boardConsumer.slide();
+            expect(boardConsumer.at(0).isFree()).to.eql(true);
+            expect(boardConsumer.at(5).isFree()).to.eql(true);
+            expect(boardConsumer.at(6).isFree()).to.eql(true);
+            expect(boardConsumer.at(11).isFree()).to.eql(true);
+        });
+    });
+
+    describe("slide()", function(){
+        it("check column indexes after shift", function(){
+            var boardConsumer = new BoardConsumer(10, 2);
+            boardConsumer.generate(3);
+            boardConsumer.at(2).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(4).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(5).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(7).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(8).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(12).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(14).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(15).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(17).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(18).setValue(Cell.FREE_CELL_VALUE);
+            // slide across a few count of free columns
+            boardConsumer.slide();
+            expect(boardConsumer.at(10).isFree()).to.eql(true);
+            expect(boardConsumer.at(0).isFree()).to.eql(true);
+            expect(boardConsumer.at(11).isFree()).to.eql(true);
+            expect(boardConsumer.at(1).isFree()).to.eql(true);
+            expect(boardConsumer.at(17).isFree()).to.eql(true);
+            expect(boardConsumer.at(7).isFree()).to.eql(true);
+            expect(boardConsumer.at(18).isFree()).to.eql(true);
+            expect(boardConsumer.at(8).isFree()).to.eql(true);
+            expect(boardConsumer.at(19).isFree()).to.eql(true);
+            expect(boardConsumer.at(9).isFree()).to.eql(true);
+        });
+    });
+
+    describe("slide()", function(){
+        it("check column indexes after shift", function(){
+            var boardConsumer = new BoardConsumer(12, 2);
+            boardConsumer.generate(3);
+            boardConsumer.at(1).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(2).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(3).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(5).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(6).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(8).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(9).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(13).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(14).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(15).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(17).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(18).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(20).setValue(Cell.FREE_CELL_VALUE);
+            boardConsumer.at(21).setValue(Cell.FREE_CELL_VALUE);
+            // slide across a few count of free columns
+            boardConsumer.slide();
+            expect(boardConsumer.at(0).isFree()).to.eql(true);
+            expect(boardConsumer.at(1).isFree()).to.eql(true);
+            expect(boardConsumer.at(2).isFree()).to.eql(true);
+            expect(boardConsumer.at(3).isFree()).to.eql(true);
+            expect(boardConsumer.at(9).isFree()).to.eql(true);
+            expect(boardConsumer.at(10).isFree()).to.eql(true);
+            expect(boardConsumer.at(11).isFree()).to.eql(true);
+            expect(boardConsumer.at(12).isFree()).to.eql(true);
+            expect(boardConsumer.at(13).isFree()).to.eql(true);
+            expect(boardConsumer.at(14).isFree()).to.eql(true);
+            expect(boardConsumer.at(15).isFree()).to.eql(true);
+            expect(boardConsumer.at(21).isFree()).to.eql(true);
+            expect(boardConsumer.at(22).isFree()).to.eql(true);
+            expect(boardConsumer.at(23).isFree()).to.eql(true);
+        });
+    });
 });
