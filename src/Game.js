@@ -11,6 +11,7 @@ class Game extends Phaser.Scene {
         this.boardConsumer = new BoardConsumer(config.width, config.height);
 
         this.boardConsumer.subscribe(commonEventNames.E_CELL_VALUE, this._updateFrameValue.bind(this));
+        this.boardConsumer.subscribe(commonEventNames.E_SHIFT_CELL, this._shiftCells.bind(this));
         this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_FREE, this._cellToFree.bind(this));
         this.boardConsumer.subscribe(commonEventNames.E_FALL_CELL, this._fallCell.bind(this));
         this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_BONUS, this._cellToBonus.bind(this));
@@ -22,8 +23,10 @@ class Game extends Phaser.Scene {
     }
 
     create(){
+        var self = this;
+
         this.generateDefaultBoard();
-        this.boardConsumer.generate(3);
+        this.boardConsumer.generate(2);
 
         // ---------------------- test
 
@@ -43,74 +46,59 @@ class Game extends Phaser.Scene {
                 if((childXStartPoint <= event.x && event.x <= childXEndPoint) &&
                    (childYStartPoint <= event.y && event.y <= childYEndPoint)){
                     result = this.boardConsumer.getMatchIndexes(i);
+                    console.log(result);
                     countMatchChildren = result.length;
                     if(countMatchChildren >= config.BlockAmountToBonus){
                         //this.boardConsumer.destroyAtIndexes(result, true, Cell.PRICE_INCREASOR);
                     } else if(countMatchChildren >= config.minBlockAmount && countMatchChildren <= config.BlockAmountToBonus){
-                        //this.boardConsumer.destroyAtIndexes(result);
+                        this.boardConsumer.destroyAtIndexes(result);
                     } else if(countMatchChildren > 0 && countMatchChildren < config.minBlockAmount){
                         //this.boardConsumer.destroyAtIndexes(result, false, Cell.PRICE_DECREASOR);
                     }
                     this.boardConsumer.fall();
+                    setTimeout(function(){
+                        self.boardConsumer.slide();
+                    }, 1000);
                     break;
                 }
             }
         }, this);
-
-        //this.boardConsumer.destroyAtIndexes([5, 6, 7, 8]);
-
-        //this.boardConsumer.fall();
-
-        /*var self = this;
-        setTimeout(function(){
-            self.boardConsumer.destroyAtIndexes([6]);
-            self.boardConsumer.fall();
-            self.boardConsumer.showBoard();
-        }, 1000);*/
-
-    }
-
-    static _swapSpriteCellIndex(sprite1, sprite2){
-        var tmp = sprite1.cellIndex;
-        sprite1.cellIndex = sprite2.cellIndex;
-        sprite2.cellIndex = tmp;
     }
 
     _updateFrameValue(eventName, cellData){
-        var spriteToUpdate = this.findChildByCellIndex(cellData.index);
-        if(spriteToUpdate !== null){
-            spriteToUpdate.setFrame(cellData.value);
-        }
+        var spriteToUpdate = this.groupChildren[cellData.index];
+        spriteToUpdate.setFrame(cellData.value);
+    }
+
+    _shiftCells(eventName, data){
+        this.swapHorizontally(data.toIndex, data.fromIndex);
     }
 
     _fallCell(eventName, data){
         var self;
-        // get sprite from group by index
-        var toIndex = this.groupChildren[data.toIndex];
-        var fromIndexOnView = this.groupChildren[data.fromIndex];
-        var fromIndex = this.findChildByCellIndex(data.fromIndex); // get visible sprite which was replaced
-        if(toIndex && fromIndex !== null){
+        var toChild = this.groupChildren[data.toIndex];
+        var fromChild = this.groupChildren[data.fromIndex];
+        var yFrom = fromChild.y;
+        if(toChild && fromChild !== null){
             self = this;
             this.tweens.add({
-                targets: fromIndex,
-                y: toIndex.y,
+                targets: fromChild,
+                y: toChild.y,
                 duration: 500,
                 ease: "Bounce",
                 repeat: 0,
                 onComplete: function(){
                     // delete tween from sprite
-                    self.tweens.killTweensOf(fromIndex);
+                    self.tweens.killTweensOf(fromChild);
                 }
             }, this);
-            Game._swapSpriteCellIndex(fromIndexOnView, toIndex);
+            this.swapVertically(data.toIndex, data.fromIndex, yFrom);
         }
     }
 
     _cellToFree(eventName, index){
-        var spriteToFree = this.findChildByCellIndex(index);
-        if(spriteToFree !== null){
-            spriteToFree.setVisible(false);
-        }
+        var spriteToFree = this.groupChildren[index];
+        spriteToFree.setVisible(false);
     }
 
     _cellToBonus(eventName, index){
@@ -122,10 +110,30 @@ class Game extends Phaser.Scene {
     }
 
     __changeFrame(index, frameNumber){
-        var spriteToFree = this.findChildByCellIndex(index);
-        if(spriteToFree !== null){
-            spriteToFree.setFrame(frameNumber);
-        }
+        var spriteToFree = this.groupChildren[index];
+        spriteToFree.setFrame(frameNumber);
+    }
+
+    swapHorizontally(toIndex, fromIndex){
+        var toChild = this.groupChildren[toIndex];
+        var fromChild = this.groupChildren[fromIndex];
+        var xTo = toChild.x;
+        var xFrom = fromChild.x;
+        this.groupChildren[toIndex] = fromChild;
+        this.groupChildren[toIndex].x = xTo; // save previous child position
+        this.groupChildren[fromIndex] = toChild;
+        this.groupChildren[fromIndex].x = xFrom; // save previous child position
+    }
+
+    swapVertically(toIndex, fromIndex, yFrom){
+        var toChild = this.groupChildren[toIndex];
+        var fromChild = this.groupChildren[fromIndex];
+        this.groupChildren[toIndex] = fromChild;
+        // this.groupChildren[toIndex].y = toChild.y; // it happens in tween fall effect
+        this.groupChildren[fromIndex] = toChild;
+        this.groupChildren[fromIndex].y = yFrom; // save previous child position
+        //to.cellIndex = fromIndex;
+        //fromIndex.cellIndex = toIndex;
     }
 
     generateDefaultBoard(){
@@ -140,25 +148,12 @@ class Game extends Phaser.Scene {
         }
 
         this.group = this.add.group(frames);
-        this.groupChildren = this.group.getChildren();
+        this.groupChildren = this.group.getChildren().slice();
 
         count = this.groupChildren.length;
         for(i = 0; i < count; ++i){
             this.groupChildren[i].cellIndex = i;
         }
-    }
-
-    /**
-     * Return sprite which index in group equal to cellIndex of sprite which index expect method
-     * @param childIndex {Number}
-     */
-    findChildByCellIndex(childIndex){
-        var result = null;
-        var child = this.groupChildren[childIndex];
-        if(child){
-            result = this.groupChildren[child.cellIndex];
-        }
-        return result;
     }
 }
 

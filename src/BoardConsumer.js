@@ -207,21 +207,7 @@ BoardConsumer.prototype.slide = function(){
         cell = this.__board.at(index);
         if(cell.isFree() && firstNoEmptyCellIndex !== -1){
             // case when founded free cell after no empty cell
-            x = this.__board.xAtIndex(index);
-            y = this.__board.yAtIndex(index) - 1;
-            for(y; y >= 0; --y){
-                // check that full column has free cells
-                topCell = this.__board.at(this.__board.indexAtPosition(x, y));
-                if(topCell.isFree()){
-                    if(y === 0){
-                        // swap current free and no empty columns and shift to center
-                        this._shiftToCenter(index);
-                    }
-                } else{
-                    // exit when founded first no empty cell
-                    break;
-                }
-            }
+            this._shiftToCenter(index);
         } else if(!cell.isFree() && firstNoEmptyCellIndex === -1){
             // case when founded fist no empty cell
             firstNoEmptyCellIndex = index;

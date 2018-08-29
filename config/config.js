@@ -1,6 +1,6 @@
 module.exports = {
-    width: 3,
-    height: 4,
+    width: 4,
+    height: 5,
     sprite: {
         x: 100,
         y: 100,
@@ -9,6 +9,6 @@ module.exports = {
         bonusIndex: 4,
         badIndex: 5
     },
-    minBlockAmount: 3,
+    minBlockAmount: 2,
     BlockAmountToBonus: 10
 };
