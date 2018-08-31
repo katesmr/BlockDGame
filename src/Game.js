@@ -31,36 +31,19 @@ class Game extends Phaser.Scene {
         // ---------------------- test
 
         console.log(this.groupChildren);
-        this.input.on("pointerdown", function(event){
-            var i, currentChild, childXStartPoint, childYStartPoint, childXEndPoint, childYEndPoint, countMatchChildren;
-            var result = null;
-            var halfXLength = config.sprite.xStep / 2;
-            var halfYLength = config.sprite.yStep / 2;
-            var count = this.groupChildren.length;
-            for(i = 0; i < count; ++i){
-                currentChild = this.groupChildren[i];
-                childXStartPoint = currentChild.x - halfXLength;
-                childYStartPoint = currentChild.y - halfYLength;
-                childXEndPoint = currentChild.x + halfXLength;
-                childYEndPoint = currentChild.y + halfYLength;
-                if((childXStartPoint <= event.x && event.x <= childXEndPoint) &&
-                   (childYStartPoint <= event.y && event.y <= childYEndPoint)){
-                    result = this.boardConsumer.getMatchIndexes(i);
-                    console.log(result);
-                    countMatchChildren = result.length;
-                    if(countMatchChildren >= config.BlockAmountToBonus){
-                        //this.boardConsumer.destroyAtIndexes(result, true, Cell.PRICE_INCREASOR);
-                    } else if(countMatchChildren >= config.minBlockAmount && countMatchChildren <= config.BlockAmountToBonus){
-                        this.boardConsumer.destroyAtIndexes(result);
-                    } else if(countMatchChildren > 0 && countMatchChildren < config.minBlockAmount){
-                        //this.boardConsumer.destroyAtIndexes(result, false, Cell.PRICE_DECREASOR);
-                    }
-                    this.boardConsumer.fall();
-                    setTimeout(function(){
-                        self.boardConsumer.slide();
-                    }, 1000);
-                    break;
+        this.input.on("pointerdown", function(pointer, gameObject){
+            var result, countMatchChildren;
+            var sprite = gameObject[0];
+            if(sprite){
+                result = this.boardConsumer.getMatchIndexes(sprite.cellIndex);
+                countMatchChildren = result.length;
+                if(countMatchChildren >= config.minBlockAmount && countMatchChildren <= config.BlockAmountToBonus){
+                    this.boardConsumer.destroyAtIndexes(result);
                 }
+                this.boardConsumer.fall();
+                setTimeout(function(){
+                    self.boardConsumer.slide();
+                }, 1000);
             }
         }, this);
     }
@@ -123,6 +106,8 @@ class Game extends Phaser.Scene {
         this.groupChildren[toIndex].x = xTo; // save previous child position
         this.groupChildren[fromIndex] = toChild;
         this.groupChildren[fromIndex].x = xFrom; // save previous child position
+        toChild.cellIndex = fromIndex;
+        fromChild.cellIndex = toIndex;
     }
 
     swapVertically(toIndex, fromIndex, yFrom){
@@ -132,8 +117,8 @@ class Game extends Phaser.Scene {
         // this.groupChildren[toIndex].y = toChild.y; // it happens in tween fall effect
         this.groupChildren[fromIndex] = toChild;
         this.groupChildren[fromIndex].y = yFrom; // save previous child position
-        //to.cellIndex = fromIndex;
-        //fromIndex.cellIndex = toIndex;
+        toChild.cellIndex = fromIndex;
+        fromChild.cellIndex = toIndex;
     }
 
     generateDefaultBoard(){
@@ -153,6 +138,7 @@ class Game extends Phaser.Scene {
         count = this.groupChildren.length;
         for(i = 0; i < count; ++i){
             this.groupChildren[i].cellIndex = i;
+            this.groupChildren[i].setInteractive();
         }
     }
 }
