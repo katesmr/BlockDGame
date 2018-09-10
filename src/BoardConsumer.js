@@ -168,11 +168,6 @@ BoardConsumer.prototype.swapColumns = function(indexFirstColumn, indexSecondColu
 BoardConsumer.prototype._shiftToCenter = function(toSlide){
     var index, count, xPosition;
     var halfWidth = Math.floor(this.__board.width / 2); // value of center x
-    if(this.__board.width % 2 !== 0){
-        if(toSlide === halfWidth + 1){
-            // case when empty column in center board with odd width of board
-        }
-    }
     index = toSlide;
     xPosition = this.__board.xAtIndex(toSlide);
     if(xPosition >= 0 && xPosition < halfWidth){

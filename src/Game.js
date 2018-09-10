@@ -10,8 +10,10 @@ class Game extends Phaser.Scene {
         this.groupChildren = null;
         this.boardConsumer = new BoardConsumer(config.width, config.height);
 
+        this.isRest = true;
+
         this.boardConsumer.subscribe(commonEventNames.E_CELL_VALUE, this._updateFrameValue.bind(this));
-        this.boardConsumer.subscribe(commonEventNames.E_SHIFT_CELL, this._shiftCells.bind(this));
+        this.boardConsumer.subscribe(commonEventNames.E_SHIFT_CELL, this._slideCells.bind(this));
         this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_FREE, this._cellToFree.bind(this));
         this.boardConsumer.subscribe(commonEventNames.E_FALL_CELL, this._fallCell.bind(this));
         this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_BONUS, this._cellToBonus.bind(this));
@@ -23,29 +25,50 @@ class Game extends Phaser.Scene {
     }
 
     create(){
-        var self = this;
-
         this.generateDefaultBoard();
         this.boardConsumer.generate(2);
 
-        // ---------------------- test
-
         console.log(this.groupChildren);
         this.input.on("pointerdown", function(pointer, gameObject){
-            var result, countMatchChildren;
             var sprite = gameObject[0];
-            if(sprite){
-                result = this.boardConsumer.getMatchIndexes(sprite.cellIndex);
-                countMatchChildren = result.length;
-                if(countMatchChildren >= config.minBlockAmount && countMatchChildren <= config.BlockAmountToBonus){
-                    this.boardConsumer.destroyAtIndexes(result);
-                }
-                this.boardConsumer.fall();
-                setTimeout(function(){
-                    self.boardConsumer.slide();
-                }, 1000);
+            if(this.isRest === true && sprite){
+                console.log("THIIIIIS");
+                this._pointDown(sprite);
             }
         }, this);
+    }
+
+    _pointDown(sprite){
+        console.log("on click");
+        console.log(this.isRest);
+        var result = this.boardConsumer.getMatchIndexes(sprite.cellIndex);
+        console.log(result);
+        var countMatchChildren = result.length;
+        if(countMatchChildren >= config.minBlockAmount && countMatchChildren <= config.BlockAmountToBonus){
+            this.boardConsumer.destroyAtIndexes(result);
+            this.isRest = false;
+            this._fall();
+        }
+    }
+
+    _fall(){
+        var self = this;
+        console.log("on fall");
+        console.log(this.isRest);
+        this.boardConsumer.fall();
+        setTimeout(function(){
+            self._slide();
+        }, config.slideTime + config.fallTime);
+    }
+
+    _slide(){
+        var self = this;
+        console.log("on slide");
+        console.log(this.isRest);
+        this.boardConsumer.slide();
+        setTimeout(function(){
+            self.isRest = true;
+        }, config.slideTime);
     }
 
     _updateFrameValue(eventName, cellData){
@@ -53,8 +76,28 @@ class Game extends Phaser.Scene {
         spriteToUpdate.setFrame(cellData.value);
     }
 
-    _shiftCells(eventName, data){
-        this.swapHorizontally(data.toIndex, data.fromIndex);
+    _slideCells(eventName, data){
+        var self;
+        var toChild = this.groupChildren[data.toIndex];
+        var fromChild = this.groupChildren[data.fromIndex];
+        console.log("from: " + data.fromIndex + " x: " + fromChild.x);
+        console.log("to: " + data.toIndex + " x: " + toChild.x);
+        var xFrom = fromChild.x;
+        if(toChild && fromChild !== null){
+            self = this;
+            this.tweens.add({
+                targets: fromChild,
+                x: toChild.x,
+                duration: config.slideTime,
+                ease: "Elastic.Out",
+                repeat: 0,
+                onComplete: function(){
+                    // delete tween from sprite
+                    self.tweens.killTweensOf(fromChild);
+                }
+            }, this);
+            this.swapHorizontally(data.toIndex, data.fromIndex, xFrom);
+        }
     }
 
     _fallCell(eventName, data){
@@ -67,7 +110,7 @@ class Game extends Phaser.Scene {
             this.tweens.add({
                 targets: fromChild,
                 y: toChild.y,
-                duration: 500,
+                duration: config.fallTime,
                 ease: "Bounce",
                 repeat: 0,
                 onComplete: function(){
@@ -97,13 +140,11 @@ class Game extends Phaser.Scene {
         spriteToFree.setFrame(frameNumber);
     }
 
-    swapHorizontally(toIndex, fromIndex){
+    swapHorizontally(toIndex, fromIndex, xFrom){
         var toChild = this.groupChildren[toIndex];
         var fromChild = this.groupChildren[fromIndex];
-        var xTo = toChild.x;
-        var xFrom = fromChild.x;
         this.groupChildren[toIndex] = fromChild;
-        this.groupChildren[toIndex].x = xTo; // save previous child position
+        //this.groupChildren[toIndex].x = xTo; // it happens in tween slide effect
         this.groupChildren[fromIndex] = toChild;
         this.groupChildren[fromIndex].x = xFrom; // save previous child position
         toChild.cellIndex = fromIndex;

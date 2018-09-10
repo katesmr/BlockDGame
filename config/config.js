@@ -1,6 +1,8 @@
 module.exports = {
-    width: 4,
-    height: 5,
+    width: 6,
+    height: 7,
+    fallTime: 500,
+    slideTime: 250,
     sprite: {
         x: 100,
         y: 100,
@@ -10,5 +12,5 @@ module.exports = {
         badIndex: 5
     },
     minBlockAmount: 2,
-    BlockAmountToBonus: 10
+    BlockAmountToBonus: 20
 };
