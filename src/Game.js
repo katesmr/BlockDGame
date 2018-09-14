@@ -1,6 +1,5 @@
 var config = require("../config/config.js");
 var BoardConsumer = require("./BoardConsumer.js");
-var Cell = require("./core/Cell.js");
 var commonEventNames = require("./core/commonEventNames.js");
 
 class Game extends Phaser.Scene {
@@ -32,17 +31,13 @@ class Game extends Phaser.Scene {
         this.input.on("pointerdown", function(pointer, gameObject){
             var sprite = gameObject[0];
             if(this.isRest === true && sprite){
-                console.log("THIIIIIS");
                 this._pointDown(sprite);
             }
         }, this);
     }
 
     _pointDown(sprite){
-        console.log("on click");
-        console.log(this.isRest);
         var result = this.boardConsumer.getMatchIndexes(sprite.cellIndex);
-        console.log(result);
         var countMatchChildren = result.length;
         if(countMatchChildren >= config.minBlockAmount && countMatchChildren <= config.BlockAmountToBonus){
             this.boardConsumer.destroyAtIndexes(result);
@@ -53,8 +48,6 @@ class Game extends Phaser.Scene {
 
     _fall(){
         var self = this;
-        console.log("on fall");
-        console.log(this.isRest);
         this.boardConsumer.fall();
         setTimeout(function(){
             self._slide();
@@ -63,8 +56,6 @@ class Game extends Phaser.Scene {
 
     _slide(){
         var self = this;
-        console.log("on slide");
-        console.log(this.isRest);
         this.boardConsumer.slide();
         setTimeout(function(){
             self.isRest = true;
@@ -80,8 +71,6 @@ class Game extends Phaser.Scene {
         var self;
         var toChild = this.groupChildren[data.toIndex];
         var fromChild = this.groupChildren[data.fromIndex];
-        console.log("from: " + data.fromIndex + " x: " + fromChild.x);
-        console.log("to: " + data.toIndex + " x: " + toChild.x);
         var xFrom = fromChild.x;
         if(toChild && fromChild !== null){
             self = this;

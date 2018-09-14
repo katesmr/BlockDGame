@@ -1,5 +1,5 @@
 module.exports = {
-    width: 6,
+    width: 10,
     height: 7,
     fallTime: 500,
     slideTime: 250,

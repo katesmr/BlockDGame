@@ -161,53 +161,38 @@ BoardConsumer.prototype.swapColumns = function(indexFirstColumn, indexSecondColu
 };
 
 /**
- * Get index of bottom cell and shift columns towards to center
- * Determine which side to do shift
- * @param toSlide {Number} - index of free cell
- */
-BoardConsumer.prototype._shiftToCenter = function(toSlide){
-    var index, count, xPosition;
-    var halfWidth = Math.floor(this.__board.width / 2); // value of center x
-    index = toSlide;
-    xPosition = this.__board.xAtIndex(toSlide);
-    if(xPosition >= 0 && xPosition < halfWidth){
-        // shift to right side
-        for(xPosition; xPosition > 0; --xPosition){
-            --index;
-            // swap with only no empty cells
-            if(!this.__board.at(index).isFree()){
-                this.swapColumns(toSlide, index);
-            }
-        }
-    } else if(xPosition >= halfWidth && xPosition < this.__board.width){
-        // shift to left side
-        count = this.__board.width * this.__board.height - 1;
-        for(index; index < count; ++index){
-            // swap with only no empty cells
-            if(!this.__board.at(index + 1).isFree()) {
-                this.swapColumns(index, index + 1);
-            }
-        }
-    }
-};
-
-/**
  * Search in bottom cells free cell and check its columns is free too
  */
 BoardConsumer.prototype.slide = function(){
-    var i, cell, index, x, y, topCell;
-    var firstNoEmptyCellIndex = -1;
-    index = (this.__board.width * this.__board.height) - 1;
-    for(i = 0; i < this.__board.width; ++i){
+    var i, j, cell, index;
+    var isFreeFounded = false;
+    var freeIndex = null;
+    var bottomY = this.__board.height - 1;
+    var centerX = Math.floor(this.__board.width / 2);
+    for(i = centerX; i < this.__board.width; ++i){
+        index = this.__board.indexAtPosition(i, bottomY);
         cell = this.__board.at(index);
-        if(cell.isFree() && firstNoEmptyCellIndex !== -1){
-            // case when founded free cell after no empty cell
-            this._shiftToCenter(index);
-        } else if(!cell.isFree() && firstNoEmptyCellIndex === -1){
-            // case when founded fist no empty cell
-            firstNoEmptyCellIndex = index;
+        if(cell.isFree() && !isFreeFounded){
+            freeIndex = index;
+            isFreeFounded = true;
+        } else if(!cell.isFree() && isFreeFounded){
+            this.swapColumns(freeIndex, index);
+            isFreeFounded = false;
+            i = this.__board.xAtIndex(freeIndex);
         }
-        --index;
+    }
+    isFreeFounded = false;
+    for(j = centerX-1; j >= 0; --j){
+        index = this.__board.indexAtPosition(j, bottomY);
+        cell = this.__board.at(index);
+        if(cell.isFree() && !isFreeFounded){
+            freeIndex = index;
+            isFreeFounded = true;
+        } else if(!cell.isFree() && isFreeFounded){
+            this.swapColumns(freeIndex, index);
+            isFreeFounded = false;
+            j = this.__board.xAtIndex(freeIndex);
+        }
     }
 };
 
@@ -238,7 +223,8 @@ BoardConsumer.prototype.showBoard = function(){
             if(cell.isFree()){
                 cellView = " ";
             } else{
-                cellView = "#";
+                //cellView = "#";
+                cellView = '' + cell.getValue();
             }
             tmp.push(cellView);
             ++index;
