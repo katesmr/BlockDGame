@@ -1,4 +1,4 @@
-var Game = require("./Game.js");
+var Game = require("./GameScene.js");
 var PhaserGame = require("./PhaserGame.js");
 var Cell = require("./core/Cell.js");
 var Board = require("./core/Board.js");

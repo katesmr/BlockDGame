@@ -36,21 +36,13 @@ BoardConsumer.prototype.at = function(index){
     return this.__board.at(index);
 };
 
-BoardConsumer.prototype.xAtIndex = function(index){
-    return this.__board.xAtIndex(index);
-};
-
-BoardConsumer.prototype.yAtIndex = function(index){
-    return this.__board.yAtIndex(index);
-};
-
 /**
  * Send notify message with cell index and value
- * @param index
+ * @param index {Number}
  */
 BoardConsumer.prototype.sendCellValue = function(index){
     var cell = this.at(index);
-    if(cell){
+    if (cell){
         this._observer.notify(commonEventNames.E_CELL_VALUE, {"index": index, "value": cell.getValue()});
     }
 };
@@ -76,12 +68,19 @@ BoardConsumer.prototype.generate = function(maxValue){
 };
 
 /**
- *
  * @param index {Number}
  * @returns {Array}
  */
 BoardConsumer.prototype.getMatchIndexes = function(index){
     return this.__board.getMatchIndexes(index);
+};
+
+/**
+ * @param minAmount {Number}
+ * @returns {Array}
+ */
+BoardConsumer.prototype.findMatchIndexes = function(minAmount){
+    return this.__board.findMatchIndexes(minAmount);
 };
 
 /**
@@ -164,12 +163,27 @@ BoardConsumer.prototype.swapColumns = function(indexFirstColumn, indexSecondColu
  * Search in bottom cells free cell and check its columns is free too
  */
 BoardConsumer.prototype.slide = function(){
-    var i, j, cell, index;
+    var result = false;
+    var i, cell, index;
     var isFreeFounded = false;
     var freeIndex = null;
     var bottomY = this.__board.height - 1;
     var centerX = Math.floor(this.__board.width / 2);
     for(i = centerX; i < this.__board.width; ++i){
+        index = this.__board.indexAtPosition(i, bottomY);
+        cell = this.__board.at(index);
+        if(cell.isFree() && !isFreeFounded){
+            freeIndex = index; // save first free cell index
+            isFreeFounded = true;
+        } else if(!cell.isFree() && isFreeFounded){
+            this.swapColumns(freeIndex, index);
+            isFreeFounded = false;
+            i = this.__board.xAtIndex(freeIndex); // set counter back to position where past free cell founded
+            result = true;
+        }
+    }
+    isFreeFounded = false;
+    for(i = centerX-1; i >= 0; --i){
         index = this.__board.indexAtPosition(i, bottomY);
         cell = this.__board.at(index);
         if(cell.isFree() && !isFreeFounded){
@@ -179,21 +193,10 @@ BoardConsumer.prototype.slide = function(){
             this.swapColumns(freeIndex, index);
             isFreeFounded = false;
             i = this.__board.xAtIndex(freeIndex);
+            result = true;
         }
     }
-    isFreeFounded = false;
-    for(j = centerX-1; j >= 0; --j){
-        index = this.__board.indexAtPosition(j, bottomY);
-        cell = this.__board.at(index);
-        if(cell.isFree() && !isFreeFounded){
-            freeIndex = index;
-            isFreeFounded = true;
-        } else if(!cell.isFree() && isFreeFounded){
-            this.swapColumns(freeIndex, index);
-            isFreeFounded = false;
-            j = this.__board.xAtIndex(freeIndex);
-        }
-    }
+    return result;
 };
 
 /**
@@ -212,6 +215,26 @@ BoardConsumer.prototype.getReward = function(indexList){
     return result;
 };
 
+/**
+ * Compute score be cell value
+ * Total count of equal cells multiple on cells value
+ * @param indexList {Array}
+ * @returns {Number}
+ */
+BoardConsumer.prototype.scoreByValue = function(indexList){
+    var i, cellList, count, value;
+    cellList = [];
+    count = indexList.length;
+    for(i = 0; i < count; ++i){
+        cellList.push(this.at(indexList[i]));
+    }
+    value = cellList[0].getValue() + 1;
+    return count * value;
+};
+
+/**
+ * Help function for imagine board in console
+ */
 BoardConsumer.prototype.showBoard = function(){
     var i, j, cell, cellView;
     var index = 0;
@@ -223,7 +246,6 @@ BoardConsumer.prototype.showBoard = function(){
             if(cell.isFree()){
                 cellView = " ";
             } else{
-                //cellView = "#";
                 cellView = '' + cell.getValue();
             }
             tmp.push(cellView);
