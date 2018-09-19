@@ -19,7 +19,6 @@ describe("BoardConsumer", function(){
             var width = 2;
             var height = 3;
             var boardConsumer = new BoardConsumer(width, height);
-            boardConsumer.generate(1);
 
             boardConsumer.subscribe(commonEventNames.E_CELL_VALUE, function(eventName, data){
                 ++counter;
@@ -28,6 +27,7 @@ describe("BoardConsumer", function(){
                     expect(counter).to.equal(width * height);
                 }
             });
+            boardConsumer.generate(1);
         });
     });
 
@@ -337,7 +337,6 @@ describe("BoardConsumer", function(){
                     expect(counter).to.equal(6);
                 }
             });
-
             boardConsumer.swapColumns(6, 8);
         });
     });
