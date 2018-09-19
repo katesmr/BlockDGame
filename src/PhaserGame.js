@@ -1,11 +1,13 @@
 var GameScene = require("./GameScene.js");
+var GameOverScene = require("./GameOverScene.js");
+var MenuScene = require("./MenuScene.js");
 var params = require("../config/config.js");
 
 var config = {
     type: Phaser.AUTO,
     width: params.sizeCoefficient * params.width,
     height: params.sizeCoefficient * params.height,
-    scene: [GameScene]
+    scene: [GameScene, GameOverScene, MenuScene]
 };
 
 module.exports = new Phaser.Game(config);
