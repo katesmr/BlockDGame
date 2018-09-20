@@ -98,11 +98,12 @@ GameScene._slide = function(){
     if(this.boardConsumer.slide()){
         this.time.delayedCall(config.slideTime, function(){
             this.isRest = true;
+            this._goToGameOverScene();
         }, [], this);
     } else{
         this.isRest = true;
+        this._goToGameOverScene();
     }
-    this._goToGameOverScene();
 };
 
 /**

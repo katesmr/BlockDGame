@@ -20,8 +20,8 @@ module.exports = {
         "2018"
     ],
     rules: [
-        "Yellow block costs 1 score.",
-        "Green block costs 2 scores.",
-        "Blue block costs 3 scores."
+        "Green block costs 1 score.",
+        "Blue block costs 2 scores.",
+        "Purple block costs 3 scores."
     ]
 };
