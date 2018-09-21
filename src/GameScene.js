@@ -14,7 +14,15 @@ GameScene.maxScore = 0;
  * Preload sprites
  */
 GameScene.preload = function(){
+    this.boardConsumer = new BoardConsumer(config.width, config.height);
     this.load.spritesheet("cat", "../assets/colors.png", {frameWidth: 60, frameHeight: 60, endFrame: 5});
+
+    this.boardConsumer.subscribe(commonEventNames.E_CELL_VALUE, this._updateFrameValue.bind(this));
+    this.boardConsumer.subscribe(commonEventNames.E_SHIFT_CELL, this._slideCells.bind(this));
+    this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_FREE, this._cellToFree.bind(this));
+    this.boardConsumer.subscribe(commonEventNames.E_FALL_CELL, this._fallCell.bind(this));
+    this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_BONUS, this._cellToBonus.bind(this));
+    this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_BAD, this._cellToBad.bind(this));
 };
 
 /**
@@ -22,7 +30,6 @@ GameScene.preload = function(){
  * It call everytime when switch between scenes
  */
 GameScene.create = function(){
-    this.boardConsumer = new BoardConsumer(config.width, config.height);
     this.score = 0;
     this.menu = null;
     this.scoreText = null;
@@ -31,26 +38,24 @@ GameScene.create = function(){
 
     this.isRest = true;
 
-    this.boardConsumer.subscribe(commonEventNames.E_CELL_VALUE, this._updateFrameValue.bind(this));
-    this.boardConsumer.subscribe(commonEventNames.E_SHIFT_CELL, this._slideCells.bind(this));
-    this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_FREE, this._cellToFree.bind(this));
-    this.boardConsumer.subscribe(commonEventNames.E_FALL_CELL, this._fallCell.bind(this));
-    this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_BONUS, this._cellToBonus.bind(this));
-    this.boardConsumer.subscribe(commonEventNames.E_CELL_TO_BAD, this._cellToBad.bind(this));
-
     this.generateDefaultBoard();
     this.boardConsumer.generate(2);
 
     this.menu = this.add.text(0, 0, "menu", {font: "30px Impact"});
     this.menu.setInteractive();
-    this.menu.setBackgroundColor("#373636");
+    this.menu.setBackgroundColor(config.buttonColor);
     this.menu.setPadding(8);
 
     this.scoreText = this.add.text(150, 10, "score: ", {font: "30px Impact"});
 
+    console.log(this.groupChildren);
     this.menu.on("pointerdown", function(){
         this.scene.start("MenuScene");
     }, this);
+
+    this.time.delayedCall(config.gameTime, function(){
+        this.scene.start("GameOverScene");
+    }, [], this);
 
     this.input.on("pointerdown", function(pointer, gameObject){
         var sprite = gameObject[0];
@@ -119,8 +124,18 @@ GameScene._goToGameOverScene = function(){
             GameScene.maxScore = this.score;
         }
         localStorage.setItem("max score", GameScene.maxScore);
-        this.scene.start("GameOverScene");
+        this._clearSceneComponents();
+        this.create();
     }
+};
+
+/**
+ * Clear previous data from scene components
+ * @private
+ */
+GameScene._clearSceneComponents = function(){
+    this.spriteGroup.clear(true);
+    this.scoreText.destroy();
 };
 
 /**

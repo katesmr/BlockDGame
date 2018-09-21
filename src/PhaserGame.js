@@ -7,7 +7,7 @@ var config = {
     type: Phaser.AUTO,
     width: params.sizeCoefficient * params.width,
     height: params.sizeCoefficient * params.height,
-    scene: [GameScene, GameOverScene, MenuScene]
+    scene: [MenuScene, GameScene, GameOverScene]
 };
 
 module.exports = new Phaser.Game(config);

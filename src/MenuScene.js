@@ -4,11 +4,14 @@ var MenuScene = new Phaser.Scene("MenuScene");
 
 MenuScene.create = function() {
     var self = this;
+    var sceneHeight = config.sizeCoefficient * config.height;
 
-    this.button = this.add.text((config.width * config.sizeCoefficient) - 50, 0, "x", {font: "40px Impact"});
+    this.button = this.add.text(((config.width * config.sizeCoefficient) / 2) - 60,
+                                sceneHeight / 2,
+                                "play", {font: "40px Impact"});
     this.button.setInteractive();
-    this.button.setBackgroundColor("red");
-    this.button.setPadding(8, 0);
+    this.button.setBackgroundColor(config.buttonColor);
+    this.button.setPadding(24, 8);
     this.button.on("pointerdown", function(){
         self.scene.start("GameScene");
     });
@@ -16,7 +19,7 @@ MenuScene.create = function() {
     var i, xPosition, yPosition, yStep;
     yStep = 30;
     xPosition = 10;
-    yPosition = (config.sizeCoefficient * config.height) - 110;
+    yPosition = sceneHeight - 110;
     for (i = 0; i < config.aboutText.length; ++i) {
         this.add.text(xPosition, yPosition, config.aboutText[i], {font: "25px Impact"});
         yPosition += yStep;

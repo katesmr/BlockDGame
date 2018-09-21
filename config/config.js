@@ -23,5 +23,7 @@ module.exports = {
         "Green block costs 1 score.",
         "Blue block costs 2 scores.",
         "Purple block costs 3 scores."
-    ]
+    ],
+    buttonColor: "#373636",
+    gameTime: 50000
 };
