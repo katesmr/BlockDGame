@@ -4,6 +4,9 @@ Simple game application. <br/>
 Destroy equal blocks group and get scores.
 Game over when there is no equal blocks group on the board.
 
+[You can check the game right here!](https://rawgit.com/katesmr/BlockDGame/master/index.html)
+
+
 # Usage
 
 Run server to start play. <br/>
