@@ -14,7 +14,7 @@ GameScene.maxScore = 0;
  * Preload sprites
  */
 GameScene.preload = function(){
-    this.load.spritesheet("cat", "./assets/colors.png", {frameWidth: 60, frameHeight: 60, endFrame: 5});
+    this.load.spritesheet("cat", "./assets/colors.png", {frameWidth: 64, frameHeight: 64, endFrame: 3});
 
     this.timerDuration = config.gameTime;
     this.boardConsumer = new BoardConsumer(config.width, config.height);

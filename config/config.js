@@ -7,8 +7,8 @@ module.exports = {
     sprite: {
         x: 185,
         y: 100,
-        xStep: 60,
-        yStep: 60,
+        xStep: 64,
+        yStep: 64,
         bonusIndex: 4,
         badIndex: 5
     },
@@ -20,7 +20,7 @@ module.exports = {
         "2018"
     ],
     rules: [
-        "Green block costs 1 score.",
+        "Pink block costs 1 score.",
         "Blue block costs 2 scores.",
         "Purple block costs 3 scores."
     ],
