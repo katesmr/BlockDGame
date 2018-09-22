@@ -7,8 +7,8 @@ module.exports = {
     sprite: {
         x: 185,
         y: 100,
-        xStep: 70,
-        yStep: 70,
+        xStep: 60,
+        yStep: 60,
         bonusIndex: 4,
         badIndex: 5
     },
@@ -25,5 +25,5 @@ module.exports = {
         "Purple block costs 3 scores."
     ],
     buttonColor: "#373636",
-    gameTime: 50000
+    gameTime: 60
 };
