@@ -17,6 +17,7 @@ GameScene.preload = function(){
     this.load.spritesheet("cat", "./assets/colors.png", {frameWidth: 64, frameHeight: 64, endFrame: 3});
 
     this.timerDuration = config.gameTime;
+    console.log(this.timerDuration);
     this.boardConsumer = new BoardConsumer(config.width, config.height);
 
     this.boardConsumer.subscribe(commonEventNames.E_CELL_VALUE, this._updateFrameValue.bind(this));
@@ -52,10 +53,13 @@ GameScene.create = function(){
     this.timerText = this.add.text(350, 10, "timer: ", {font: "30px Impact"});
     this.timeText = this.add.text(450, 10, "", {font: "30px Impact"});
 
-    this.gameTimer(this.timerDuration);
+    this.timeInterval = this.time.addEvent({delay: 1000, callback: function() {
+            this.gameTimer(this.timerDuration);
+        }, callbackScope: this, loop: true});
 
     this.menu.on("pointerdown", function(){
         this.scene.start("MenuScene");
+        this._clearSceneComponents();
     }, this);
 
     this.input.on("pointerdown", function(pointer, gameObject){
@@ -72,23 +76,22 @@ GameScene.create = function(){
 GameScene.gameTimer = function(duration){
     var self = this;
     var timer = duration, minutes, seconds;
-    return setInterval(function () {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+    minutes = parseInt(timer / 60, 10);
+    seconds = parseInt(timer % 60, 10);
 
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        self.timeText.setText(minutes + ":" + seconds);
-        // save current time
-        // and use it when board will update
-        self.timerDuration = --duration;
+    self.timeText.setText(minutes + ":" + seconds);
+    // save current time
+    // and use it when board will update
+    self.timerDuration = --duration;
 
-        if (--timer < 0) {
-            timer = duration;
-            self.scene.start("GameOverScene");
-        }
-    }, 1000);
+    if (self.timerDuration === 0) {
+        console.log("exit");
+        self._clearSceneComponents();
+        self.scene.start("GameOverScene");
+    }
 };
 
 /**
@@ -164,6 +167,7 @@ GameScene._clearSceneComponents = function(){
     this.scoreText.destroy();
     this.timerText.destroy();
     this.timeText.destroy();
+    this.timeInterval.destroy();
 };
 
 /**
